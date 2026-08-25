@@ -5,10 +5,10 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 7f; 
-    public float groundDrag = 5f; // Recomendado testar valores entre 5 e 7
+    public float groundDrag = 5f;
 
     [Header("Ground Check")]
-    public float playerHeight = 2f; // Altura padrão de uma cápsula na Unity
+    public float playerHeight = 2f; 
     public LayerMask whatIsGround;
     bool grounded;
 
@@ -29,12 +29,12 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // Ground Check: Dispara um raio para baixo a partir do centro do jogador.
-        // O cálculo 'playerHeight * 0.5f + 0.2f' vai do centro até o pé, adicionando 0.2f de margem.
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
         MyInput();
+        SpeedControl();
 
-        // Controle de Atrito (Drag)
+        // Controle dinâmico de atrito linear (Linear Damping)
         if (grounded)
         {
             rb.linearDamping = groundDrag;
@@ -73,5 +73,20 @@ public class PlayerMovement : MonoBehaviour
 
         // Aplica a força contínua no Rigidbody
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+    }
+
+    private void SpeedControl()
+    {
+        // Isola a velocidade nos eixos X e Z, ignorando o eixo Y (gravidade/pulo)
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+        // Limita a velocidade caso ultrapasse o limite estabelecido (moveSpeed)
+        if (flatVel.magnitude > moveSpeed)
+        {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            
+            // Aplica a velocidade limitada mantendo a velocidade vertical original
+            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+        }
     }
 }
