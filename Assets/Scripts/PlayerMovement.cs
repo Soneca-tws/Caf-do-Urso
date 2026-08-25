@@ -1,10 +1,16 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // 1. Importação do Novo Sistema de Inputs
+using UnityEngine.InputSystem; 
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 7f; // Adicionado um valor padrão sugerido
+    public float moveSpeed = 7f; 
+    public float groundDrag = 5f; // Recomendado testar valores entre 5 e 7
+
+    [Header("Ground Check")]
+    public float playerHeight = 2f; // Altura padrão de uma cápsula na Unity
+    public LayerMask whatIsGround;
+    bool grounded;
 
     public Transform orientation;
 
@@ -22,7 +28,21 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        // Ground Check: Dispara um raio para baixo a partir do centro do jogador.
+        // O cálculo 'playerHeight * 0.5f + 0.2f' vai do centro até o pé, adicionando 0.2f de margem.
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+
         MyInput();
+
+        // Controle de Atrito (Drag)
+        if (grounded)
+        {
+            rb.linearDamping = groundDrag;
+        }
+        else
+        {
+            rb.linearDamping = 0f;
+        }
     }
 
     private void FixedUpdate()
@@ -32,14 +52,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
-        // 2. Verificação de segurança: garante que há um teclado conectado
+        // Verificação de segurança para o teclado
         if (Keyboard.current == null) return;
 
-        // Zera os inputs a cada frame antes de ler novamente
+        // Reset dos inputs
         horizontalInput = 0f;
         verticalInput = 0f;
 
-        // 3. Leitura das teclas WASD 
+        // Captura das teclas WASD
         if (Keyboard.current.wKey.isPressed) verticalInput += 1f;
         if (Keyboard.current.sKey.isPressed) verticalInput -= 1f;
         if (Keyboard.current.dKey.isPressed) horizontalInput += 1f;
@@ -48,10 +68,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        // Calcula a direção do movimento baseada na orientação da câmera
+        // Calcula a direção baseada para onde a câmera/orientation está apontando
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        // Aplica a força de movimento. O uso de .normalized evita que andar na diagonal seja mais rápido
+        // Aplica a força contínua no Rigidbody
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
     }
 }
