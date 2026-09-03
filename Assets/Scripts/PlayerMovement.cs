@@ -4,11 +4,13 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 7f;
+    private float moveSpeed; // eu ACHO que ele é controlado pelo StateHandler agora
+    public float walkSpeed = 7f; 
+    public float dashSpeed = 12f;
     public float groundDrag = 5f;
 
     [Header("Jumping")]
-    public float jumpForce = 12f; // Valor inicial sugerido
+    public float jumpForce = 13f; 
     public float jumpCooldown = 0.25f;
     public float airMultiplier = 0.4f;
     bool readyToJump;
@@ -26,12 +28,21 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
     Rigidbody rb;
 
+    // 1. Definição do StateMachine
+    public MovementState state;
+
+    public enum MovementState
+    {
+        walking,
+        dashing,
+        air
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         
-        // Inicializa a variável para permitir o primeiro pulo
         readyToJump = true;
     }
 
@@ -42,8 +53,9 @@ public class PlayerMovement : MonoBehaviour
 
         MyInput();
         SpeedControl();
+        StateHandler(); // 2. Chama o StateHandler.
 
-        // Controle dinâmico de atrito linear
+        // Controle de atrito
         if (grounded)
         {
             rb.linearDamping = groundDrag;
@@ -61,42 +73,62 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
-        // Verificação de segurança para o teclado
         if (Keyboard.current == null) return;
 
-        // Reset dos inputs
         horizontalInput = 0f;
         verticalInput = 0f;
 
-        // Captura das teclas WASD
         if (Keyboard.current.wKey.isPressed) verticalInput += 1f;
         if (Keyboard.current.sKey.isPressed) verticalInput -= 1f;
         if (Keyboard.current.dKey.isPressed) horizontalInput += 1f;
         if (Keyboard.current.aKey.isPressed) horizontalInput -= 1f;
 
-        // Lógica de Pulo adaptada para o New Input System (Barra de Espaço)
         if (Keyboard.current.spaceKey.isPressed && readyToJump && grounded)
         {
             readyToJump = false;
-
             Jump();
-
-            // Invoca a função de resetar o pulo após o tempo de cooldown
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+    }
+
+    private void StateHandler()
+    {
+        // 3. Verificação dos botões de Dash 
+        bool isDashing = false;
+        
+        if (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
+            isDashing = true;
+            
+        if (Mouse.current != null && Mouse.current.rightButton.isPressed)
+            isDashing = true;
+
+        // Modo - Dashing 
+        if (grounded && isDashing)
+        {
+            state = MovementState.dashing;
+            moveSpeed = dashSpeed;
+        }
+        // Modo - Walking 
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+        // Modo - Air 
+        else
+        {
+            state = MovementState.air;
         }
     }
 
     private void MovePlayer()
     {
-        // Calcula a direção baseada para onde a câmera/orientation está apontando
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        // Movimentação no chão
         if (grounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
-        // Movimentação no ar (com multiplicador)
         else if (!grounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
@@ -105,25 +137,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedControl()
     {
-        // Isola a velocidade nos eixos X e Z, ignorando o eixo Y (gravidade/pulo)
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
-        // Limita a velocidade caso ultrapasse o limite estabelecido
         if (flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            
-            // Aplica a velocidade limitada mantendo a velocidade vertical original
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
         }
     }
 
     private void Jump()
     {
-        // Reseta a Y Velocity para garantir que o pulo alcance sempre a mesma altura
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-
-        // Aplica a força de impulso para cima
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
