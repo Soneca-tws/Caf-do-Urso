@@ -9,6 +9,21 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 12f;
     public float groundDrag = 5f;
 
+    // Nova seção para as configurações do Slide com Desaceleração
+    [Header("Sliding")]
+    [Tooltip("A velocidade inicial máxima do slide (o impulso).")]
+    public float slideBurstSpeed = 25f; 
+    
+    [Tooltip("A velocidade final quando o slide perde a força (agachado).")]
+    public float crouchSpeed = 4f; 
+    
+    [Tooltip("O quão rápido ele freia. Mude esse valor no Inspector para ajustar a derrapagem!")]
+    public float slideDeceleration = 35f; 
+    
+    private float currentSlideSpeed; 
+    public float slideYScale = 0.5f; 
+    private float startYScale; 
+
     [Header("Jumping")]
     public float jumpForce = 13f; 
     public float jumpCooldown = 0.25f;
@@ -40,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
     {
         walking,
         dashing,
+        sliding, // Novo estado de movimento adicionado para o Slide
         air
     }
 
@@ -49,6 +65,9 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
         
         readyToJump = true;
+
+        // Salva a altura inicial do player para podermos voltar a ela depois do Slide
+        startYScale = transform.localScale.y; 
     }
 
     private void Update()
@@ -94,21 +113,57 @@ public class PlayerMovement : MonoBehaviour
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+        // Verifica se a tecla Ctrl foi pressionada neste exato frame para iniciar o Slide
+        if (Keyboard.current.leftCtrlKey.wasPressedThisFrame)
+        {
+            // Reduz a escala Y do player para simular o agachamento/deslizamento
+            transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
+            // Aplica uma força para baixo para evitar que o player flutue ao reduzir de tamanho
+            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse); 
+
+            // Reseta a velocidade atual do slide para o impulso máximo!
+            currentSlideSpeed = slideBurstSpeed;
+        }
+
+        // Verifica se a tecla Ctrl foi solta neste exato frame para finalizar o Slide
+        if (Keyboard.current.leftCtrlKey.wasReleasedThisFrame)
+        {
+            // Retorna o player ao tamanho original salvo no Start
+            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        }
     }
 
     private void StateHandler()
     {
         // 3. Verificação dos botões de Dash 
         bool isDashing = false;
+        // Variável adicionada para checar se o Ctrl está sendo segurado
+        bool isSliding = false; 
         
-        if (Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed)
-            isDashing = true;
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.leftShiftKey.isPressed) isDashing = true;
+            if (Keyboard.current.leftCtrlKey.isPressed) isSliding = true; 
+        }
             
         if (Mouse.current != null && Mouse.current.rightButton.isPressed)
             isDashing = true;
 
+        // Novo Modo - Sliding (Avaliamos antes do Dashing para dar prioridade ao Slide se ambos forem pressionados)
+        if (grounded && isSliding)
+        {
+            state = MovementState.sliding;
+
+            // LÓGICA DE DESACELERAÇÃO: 
+            // MoveTowards vai diminuindo a currentSlideSpeed até chegar na crouchSpeed
+            currentSlideSpeed = Mathf.MoveTowards(currentSlideSpeed, crouchSpeed, slideDeceleration * Time.deltaTime);
+            
+            // Aplica a velocidade atualizada no player
+            moveSpeed = currentSlideSpeed;
+        }
         // Modo - Dashing 
-        if (grounded && isDashing)
+        else if (grounded && isDashing)
         {
             state = MovementState.dashing;
             moveSpeed = dashSpeed;
@@ -172,7 +227,6 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
         }
         }
-  
     }
 
     private void Jump()
