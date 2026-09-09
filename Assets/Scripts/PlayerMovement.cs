@@ -150,12 +150,11 @@ public class PlayerMovement : MonoBehaviour
         if (Mouse.current != null && Mouse.current.rightButton.isPressed)
             isDashing = true;
 
-        // Novo Modo - Sliding (Avaliamos antes do Dashing para dar prioridade ao Slide se ambos forem pressionados)
         if (grounded && isSliding)
         {
             state = MovementState.sliding;
 
-            // LÓGICA DE DESACELERAÇÃO: 
+            
             // MoveTowards vai diminuindo a currentSlideSpeed até chegar na crouchSpeed
             currentSlideSpeed = Mathf.MoveTowards(currentSlideSpeed, crouchSpeed, slideDeceleration * Time.deltaTime);
             
@@ -194,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
             if(rb.linearVelocity.y > 0)
                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
-        else if (grounded) // O 'else if' adicionado aqui para consertar o bug do pulo na rampa
+        else if (grounded) // O 'else if' adicionado aqui para consertar o bug do pulo na rampa não esquecer caso apareça dnv
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }

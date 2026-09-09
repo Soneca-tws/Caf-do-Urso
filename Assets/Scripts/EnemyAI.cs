@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; // Necessário para usar Listas (Object Pooling)
+using System.Collections.Generic; 
 
 public class EnemyAI : MonoBehaviour
 {
@@ -8,6 +8,12 @@ public class EnemyAI : MonoBehaviour
     public Transform player;
     public LayerMask whatIsGround, whatIsPlayer;
     public float health;
+
+    [Header("State")]
+    public bool isDead; // Controla se o inimigo está vivo ou morto
+
+    [Header("Debug State")]
+    public string currentState; // Mostra o estado atual da IA diretamente no Inspector
 
     // Patrulha
     public Vector3 walkPoint;
@@ -27,7 +33,7 @@ public class EnemyAI : MonoBehaviour
     // SISTEMA DE OBJECT POOLING
     // ==========================================
     [Header("Object Pooling")]
-    public int poolSize = 15; // Quantidade de balas pré-carregadas
+    public int poolSize = 15; // Quantidade de balas pré-carregadas dentro do pool
     private List<GameObject> projectilePool;
 
     private void Awake()
@@ -47,12 +53,31 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        // Se o inimigo estiver morto, atualiza o debug e encerra a execução do Update
+        if (isDead) 
+        {
+            currentState = "Dead";
+            return;
+        }
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        if (!playerInSightRange && !playerInAttackRange) Patroling();
-        if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        if (!playerInSightRange && !playerInAttackRange) 
+        {
+            currentState = "Patroling";
+            Patroling();
+        }
+        else if (playerInSightRange && !playerInAttackRange) 
+        {
+            currentState = "Chasing (Alert)";
+            ChasePlayer();
+        }
+        else if (playerInAttackRange && playerInSightRange) 
+        {
+            currentState = "Attacking";
+            AttackPlayer();
+        }
     }
 
     // 2. FUNÇÃO PARA PEGAR UMA BALA DISPONÍVEL
@@ -145,8 +170,35 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        // Se já estiver morto, não toma mais dano (evita rodar o código de morte duas vezes)
+        if (isDead) return;
+
         health -= damage;
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 5f);
+        
+        if (health <= 0) 
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        currentState = "Dead";
+
+        // 1. Para o movimento do NavMeshAgent imediatamente
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        // 2. Desliga o Collider para o player não ficar tropeçando no corpo morto
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // 3. Destrói o objeto depois de 5 segundos para limpar a cena
+        Invoke(nameof(DestroyEnemy), 5f);
     }
 
     private void DestroyEnemy()

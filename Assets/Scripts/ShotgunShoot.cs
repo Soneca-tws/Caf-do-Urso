@@ -53,6 +53,15 @@ public class ShotgunShoot : MonoBehaviour
             if (Physics.Raycast(cam.position, shootDirection, out RaycastHit hit, range))
             {
                 Debug.Log("Acertou: " + hit.collider.name);
+
+                // Tenta buscar o script EnemyAI no objeto atingido (ou nos pais caso o colisor esteja numa sub-parte)
+                EnemyAI enemy = hit.collider.GetComponentInParent<EnemyAI>();
+
+                // Se encontrou o script do inimigo, aplica o dano correspondente ao perdigão da escopeta
+                if (enemy != null)
+                {
+                    enemy.TakeDamage((int)damagePerPellet);
+                }
             }
         }
 
