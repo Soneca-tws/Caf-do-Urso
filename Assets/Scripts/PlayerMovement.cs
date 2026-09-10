@@ -24,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     public float slideYScale = 0.5f; 
     private float startYScale; 
 
+    // Variável para carregar o momentum do slide para o pulo
+    private bool attemptingSlideJump = false;
+
     [Header("Jumping")]
     public float jumpForce = 13f; 
     public float jumpCooldown = 0.25f;
@@ -110,6 +113,13 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current.spaceKey.isPressed && readyToJump && grounded)
         {
             readyToJump = false;
+            
+            // Verifica se o jogador está pulando logo após/durante um slide
+            if (state == MovementState.sliding)
+            {
+                attemptingSlideJump = true;
+            }
+
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
@@ -154,7 +164,6 @@ public class PlayerMovement : MonoBehaviour
         {
             state = MovementState.sliding;
 
-            
             // MoveTowards vai diminuindo a currentSlideSpeed até chegar na crouchSpeed
             currentSlideSpeed = Mathf.MoveTowards(currentSlideSpeed, crouchSpeed, slideDeceleration * Time.deltaTime);
             
@@ -199,7 +208,18 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (!grounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+            // Se o jogador acabou de dar um slide-jump, mantemos o momentum alto no ar!
+            if (attemptingSlideJump)
+            {
+                rb.AddForce(moveDirection.normalized * currentSlideSpeed * 10f * airMultiplier, ForceMode.Force);
+                
+                // Reseta a flag após aplicar o impulso aéreo inicial
+                attemptingSlideJump = false;
+            }
+            else
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+            }
         }
 
         //desliga a gravidade quando tá on slope
@@ -218,22 +238,46 @@ public class PlayerMovement : MonoBehaviour
         // limitador de velocidade no chão ou on air
         else
         {
-             Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        //limita a velicdade se necessário
-        if (flatVel.magnitude > moveSpeed)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
-        }
+            Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            
+            // Se estivermos executando um slide-jump, permitimos temporariamente que a velocidade no ar ultrapasse o normal
+            if (attemptingSlideJump) return;
+
+            //limita a velicdade se necessário
+            if (flatVel.magnitude > moveSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * moveSpeed;
+                rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+            }
         }
     }
 
     private void Jump()
+{
+    exitingSlope = true;
+    
+    // Zera a velocidade vertical antes de aplicar o impulso
+    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+    // Se estiver deslizando, aplicamos um "Super Pulo" com bônus de velocidade e altura!
+    if (state == MovementState.sliding)
     {
-        exitingSlope = true;
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        // Pega a velocidade atual do slide e multiplica por 1.25f para dar um boost para frente
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        rb.linearVelocity = flatVel.normalized * (currentSlideSpeed * 1.25f) + new Vector3(0f, rb.linearVelocity.y, 0f);
+
+        // Aplica a força do pulo normal somada a um bônus de altura (ex: 20% a mais de força)
+        rb.AddForce(transform.up * (jumpForce * 1.2f), ForceMode.Impulse);
+    }
+    else
+    {
+        // Pulo normal
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
+
+    // Levanta o player de volta ao tamanho normal ao saltar para ele não continuar agachado no ar
+    transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+}
 
     private void ResetJump()
     {
