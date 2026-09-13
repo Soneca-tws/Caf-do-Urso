@@ -200,7 +200,7 @@ public class EnemyAI : MonoBehaviour
         {
             GameObject bullet = GetProjectileFromPool();
             
-            bullet.transform.position = transform.position;
+            bullet.transform.position = transform.position + new Vector3(0f, 1.5f, 0f);
             bullet.transform.rotation = Quaternion.identity;
             bullet.SetActive(true); 
 
