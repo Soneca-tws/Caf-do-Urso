@@ -16,7 +16,7 @@ public class EnemyProjectile : MonoBehaviour
         Invoke(nameof(Deactivate), lifeTime);
     }
 
-    // Usamos OnTriggerEnter se a sua bala tiver a caixa "Is Trigger" marcada no Collider
+    // Usamos OnTriggerEnter pois a bala deve ter a caixa "Is Trigger" marcada no Collider
     private void OnTriggerEnter(Collider other)
     {
         // Se a bala bater no próprio inimigo que atirou (ou em outro inimigo), ela ignora e continua voando
@@ -27,8 +27,9 @@ public class EnemyProjectile : MonoBehaviour
         {
             Debug.Log("O Player tomou um tiro!");
             
-            // Aqui entrará a sua interface no futuro:
-            // IDamageable playerHealth = other.GetComponent<IDamageable>();
+            // FUTURO: Aqui você chamará o script de vida do jogador
+            // Exemplo:
+            // PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             // if (playerHealth != null) playerHealth.TakeDamage(damage);
         }
 
@@ -36,7 +37,7 @@ public class EnemyProjectile : MonoBehaviour
         Deactivate();
     }
 
-    // Função que "devolve" a bala para a piscina
+    // Função que "devolve" a bala para a piscina (Pool)
     private void Deactivate()
     {
         gameObject.SetActive(false);

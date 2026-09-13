@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; // Necessário para usar Listas (Object Pooling)
+using System.Collections.Generic; 
 
 public class EnemyAI : MonoBehaviour
 {
@@ -8,6 +8,13 @@ public class EnemyAI : MonoBehaviour
     public Transform player;
     public LayerMask whatIsGround, whatIsPlayer;
     public float health;
+
+    [Header("State")]
+    public bool isDead; // Controla se o inimigo está vivo ou morto
+    public bool isGrabbed; // NOVO: Controla se o inimigo está sendo segurado pelo jogador
+
+    [Header("Debug State")]
+    public string currentState; // Mostra o estado atual da IA diretamente no Inspector
 
     // Patrulha
     public Vector3 walkPoint;
@@ -27,7 +34,7 @@ public class EnemyAI : MonoBehaviour
     // SISTEMA DE OBJECT POOLING
     // ==========================================
     [Header("Object Pooling")]
-    public int poolSize = 15; // Quantidade de balas pré-carregadas
+    public int poolSize = 15; // Quantidade de balas pré-carregadas dentro do pool
     private List<GameObject> projectilePool;
 
     private void Awake()
@@ -47,30 +54,108 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        // Se o inimigo estiver morto OU sendo agarrado, ele ignora a IA de combate
+        if (isDead || isGrabbed) 
+        {
+            if (isDead) currentState = "Dead";
+            return;
+        }
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
-        if (!playerInSightRange && !playerInAttackRange) Patroling();
-        if (playerInSightRange && !playerInAttackRange) ChasePlayer();
-        if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        if (!playerInSightRange && !playerInAttackRange) 
+        {
+            currentState = "Patroling";
+            Patroling();
+        }
+        else if (playerInSightRange && !playerInAttackRange) 
+        {
+            currentState = "Chasing (Alert)";
+            ChasePlayer();
+        }
+        else if (playerInAttackRange && playerInSightRange) 
+        {
+            currentState = "Attacking";
+            AttackPlayer();
+        }
     }
+
+    // ==========================================
+    // NOVA MECÂNICA: AGARRAR (DASH KILL)
+    // ==========================================
+    private void OnCollisionEnter(Collision collision)
+{
+    if (isDead || isGrabbed) return;
+
+    if (collision.gameObject.CompareTag("Player"))
+    {
+        PlayerMovement pm = collision.gameObject.GetComponent<PlayerMovement>();
+        
+        if (pm != null && pm.state == PlayerMovement.MovementState.dashing)
+        {
+            // Congela o jogador por 1 segundo exato (mesmo tempo que o inimigo leva pra morrer)
+            pm.FreezePlayerForGrab(1f); 
+            
+            StartGrab();
+        }
+    }
+}
+
+    private void StartGrab()
+    {
+        isGrabbed = true;
+        currentState = "Grabbed";
+
+        // 1. Para o agente de andar imediatamente
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        // 2. Desliga a colisão temporariamente para o corpo do inimigo não atrapalhar o movimento do player
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // 3. Gruda o inimigo no jogador!
+        transform.SetParent(player);
+        
+        // Posição: Fica exatamente 1.5 metros na frente do jogador (ajuste esse Z conforme a grossura do seu inimigo)
+        transform.localPosition = new Vector3(0f, 0f, 1.5f); 
+        
+        // Faz o inimigo olhar para a mesma direção que o jogador (de costas pro player) ou olhar pro player
+        transform.localRotation = Quaternion.Euler(0, 180, 0); // Vira ele de frente para a câmera do jogador
+
+        // 4. Espera 1 segundo de paralisia e então solta e mata o inimigo
+        Invoke(nameof(FinishGrabAndDie), 1f);
+    }
+
+    private void FinishGrabAndDie()
+    {
+        // Desgruda o inimigo do jogador para o cadáver ficar no chão onde ele "morreu"
+        transform.SetParent(null);
+        
+        // Opcional: religar o collider se quiser que o cadáver tenha física depois
+        
+        // Chama a morte normal do inimigo
+        Die();
+    }
+    // ==========================================
 
     // 2. FUNÇÃO PARA PEGAR UMA BALA DISPONÍVEL
     private GameObject GetProjectileFromPool()
     {
         for (int i = 0; i < projectilePool.Count; i++)
         {
-            // TRAVA DE SEGURANÇA: Se a bala sumiu do jogo por algum motivo, pula para a próxima
             if (projectilePool[i] == null) continue;
 
-            // Se achar uma bala que está desligada, entrega ela
             if (!projectilePool[i].activeInHierarchy)
             {
                 return projectilePool[i];
             }
         }
 
-        // Se o pool esvaziar, cria uma bala extra
         GameObject newObj = Instantiate(projectile);
         newObj.SetActive(false);
         projectilePool.Add(newObj);
@@ -109,25 +194,21 @@ public class EnemyAI : MonoBehaviour
     private void AttackPlayer()
     {
         agent.SetDestination(transform.position);
-        transform.LookAt(new Vector3(player.position.x, player.position.y, player.position.z));
+        transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
         if (!alreadyAttacked)
         {
-            // 3. ATIRA USANDO O POOL EM VEZ DO INSTANTIATE
             GameObject bullet = GetProjectileFromPool();
             
-            // Reposiciona a bala na arma do inimigo
             bullet.transform.position = transform.position;
             bullet.transform.rotation = Quaternion.identity;
-            bullet.SetActive(true); // Liga a bala
+            bullet.SetActive(true); 
 
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             
-            // IMPORTANTE: Como a bala é reciclada, precisamos zerar a velocidade do tiro anterior!
             rb.linearVelocity = Vector3.zero; 
             rb.angularVelocity = Vector3.zero;
 
-            // CORREÇÃO DA MIRA: Calcula a direção do peito/centro do player com precisão
             Vector3 aimTarget = new Vector3(player.position.x, player.position.y + 1.2f, player.position.z);
             Vector3 aimDirection = (aimTarget - transform.position).normalized;
 
@@ -145,8 +226,31 @@ public class EnemyAI : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         health -= damage;
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 5f);
+        
+        if (health <= 0) 
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        currentState = "Dead";
+
+        if (agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        Invoke(nameof(DestroyEnemy), 5f);
     }
 
     private void DestroyEnemy()

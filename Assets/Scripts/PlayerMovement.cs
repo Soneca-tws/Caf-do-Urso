@@ -4,12 +4,11 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    private float moveSpeed; // eu ACHO que ele é controlado pelo StateHandler agora
+    private float moveSpeed; 
     public float walkSpeed = 7f; 
     public float dashSpeed = 12f;
     public float groundDrag = 5f;
 
-    // Nova seção para as configurações do Slide com Desaceleração
     [Header("Sliding")]
     [Tooltip("A velocidade inicial máxima do slide (o impulso).")]
     public float slideBurstSpeed = 25f; 
@@ -23,6 +22,8 @@ public class PlayerMovement : MonoBehaviour
     private float currentSlideSpeed; 
     public float slideYScale = 0.5f; 
     private float startYScale; 
+
+    private bool attemptingSlideJump = false;
 
     [Header("Jumping")]
     public float jumpForce = 13f; 
@@ -48,15 +49,20 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
     Rigidbody rb;
 
-    // 1. Definição do StateMachine
+    // ==========================================
+    // ESTADO DE AGARRÃO / EXECUÇÃO
+    // ==========================================
+    public bool isGrabbing; // Trava o jogador no lugar
+
     public MovementState state;
 
     public enum MovementState
     {
         walking,
         dashing,
-        sliding, // Novo estado de movimento adicionado para o Slide
-        air
+        sliding, 
+        air,
+        grabbing // Novo estado para pausar o jogador
     }
 
     private void Start()
@@ -65,21 +71,17 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
         
         readyToJump = true;
-
-        // Salva a altura inicial do player para podermos voltar a ela depois do Slide
         startYScale = transform.localScale.y; 
     }
 
     private void Update()
     {
-        // Ground Check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
         MyInput();
         SpeedControl();
-        StateHandler(); // 2. Chama o StateHandler.
+        StateHandler(); 
 
-        // Controle de atrito
         if (grounded)
         {
             rb.linearDamping = groundDrag;
@@ -97,6 +99,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
+        // Se estiver executando um inimigo, ignora TODOS os botões e zera a intenção de movimento
+        if (isGrabbing)
+        {
+            horizontalInput = 0f;
+            verticalInput = 0f;
+            return;
+        }
+
         if (Keyboard.current == null) return;
 
         horizontalInput = 0f;
@@ -110,35 +120,40 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current.spaceKey.isPressed && readyToJump && grounded)
         {
             readyToJump = false;
+            
+            if (state == MovementState.sliding)
+            {
+                attemptingSlideJump = true;
+            }
+
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        // Verifica se a tecla Ctrl foi pressionada neste exato frame para iniciar o Slide
         if (Keyboard.current.leftCtrlKey.wasPressedThisFrame)
         {
-            // Reduz a escala Y do player para simular o agachamento/deslizamento
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
-            // Aplica uma força para baixo para evitar que o player flutue ao reduzir de tamanho
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse); 
-
-            // Reseta a velocidade atual do slide para o impulso máximo!
             currentSlideSpeed = slideBurstSpeed;
         }
 
-        // Verifica se a tecla Ctrl foi solta neste exato frame para finalizar o Slide
         if (Keyboard.current.leftCtrlKey.wasReleasedThisFrame)
         {
-            // Retorna o player ao tamanho original salvo no Start
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
     }
 
     private void StateHandler()
     {
-        // 3. Verificação dos botões de Dash 
+        // Força o estado de grabbing e zera a velocidade alvo
+        if (isGrabbing)
+        {
+            state = MovementState.grabbing;
+            moveSpeed = 0f;
+            return;
+        }
+
         bool isDashing = false;
-        // Variável adicionada para checar se o Ctrl está sendo segurado
         bool isSliding = false; 
         
         if (Keyboard.current != null)
@@ -150,31 +165,22 @@ public class PlayerMovement : MonoBehaviour
         if (Mouse.current != null && Mouse.current.rightButton.isPressed)
             isDashing = true;
 
-        // Novo Modo - Sliding (Avaliamos antes do Dashing para dar prioridade ao Slide se ambos forem pressionados)
         if (grounded && isSliding)
         {
             state = MovementState.sliding;
-
-            // LÓGICA DE DESACELERAÇÃO: 
-            // MoveTowards vai diminuindo a currentSlideSpeed até chegar na crouchSpeed
             currentSlideSpeed = Mathf.MoveTowards(currentSlideSpeed, crouchSpeed, slideDeceleration * Time.deltaTime);
-            
-            // Aplica a velocidade atualizada no player
             moveSpeed = currentSlideSpeed;
         }
-        // Modo - Dashing 
         else if (grounded && isDashing)
         {
             state = MovementState.dashing;
             moveSpeed = dashSpeed;
         }
-        // Modo - Walking 
         else if (grounded)
         {
             state = MovementState.walking;
             moveSpeed = walkSpeed;
         }
-        // Modo - Air 
         else
         {
             state = MovementState.air;
@@ -183,10 +189,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        //calcula a direção de movimento
+        // Se estiver agarrando, não aplica nenhuma força
+        if (isGrabbing) return;
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        //onslope
         if (OnSlope() && !exitingSlope)
         {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
@@ -194,54 +201,91 @@ public class PlayerMovement : MonoBehaviour
             if(rb.linearVelocity.y > 0)
                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
-        else if (grounded) // O 'else if' adicionado aqui para consertar o bug do pulo na rampa
+        else if (grounded) 
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
         else if (!grounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+            if (attemptingSlideJump)
+            {
+                rb.AddForce(moveDirection.normalized * currentSlideSpeed * 10f * airMultiplier, ForceMode.Force);
+                attemptingSlideJump = false;
+            }
+            else
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+            }
         }
 
-        //desliga a gravidade quando tá on slope
         rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
     {
-        // limitador de velocidade on slope
         if(OnSlope() && !exitingSlope)
         {
             if(rb.linearVelocity.magnitude > moveSpeed)
                 rb.linearVelocity = rb.linearVelocity.normalized * moveSpeed;
         }
-
-        // limitador de velocidade no chão ou on air
         else
         {
-             Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        //limita a velicdade se necessário
-        if (flatVel.magnitude > moveSpeed)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
-        }
+            Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            
+            if (attemptingSlideJump) return;
+
+            if (flatVel.magnitude > moveSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * moveSpeed;
+                rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+            }
         }
     }
 
     private void Jump()
     {
         exitingSlope = true;
+        
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+        if (state == MovementState.sliding)
+        {
+            Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            rb.linearVelocity = flatVel.normalized * (currentSlideSpeed * 1.25f) + new Vector3(0f, rb.linearVelocity.y, 0f);
+            rb.AddForce(transform.up * (jumpForce * 1.2f), ForceMode.Impulse);
+        }
+        else
+        {
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        }
+
+        transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
     }
 
     private void ResetJump()
     {
         readyToJump = true;
-
         exitingSlope = false;
     }
+
+    // ==========================================
+    // FUNÇÕES PARA CONTROLAR O CONGELAMENTO
+    // ==========================================
+    public void FreezePlayerForGrab(float duration)
+    {
+        isGrabbing = true;
+        // Breca o personagem na hora, ignorando inércia!
+        rb.linearVelocity = Vector3.zero; 
+        
+        // Descongela automaticamente após o tempo
+        Invoke(nameof(UnfreezePlayer), duration);
+    }
+
+    private void UnfreezePlayer()
+    {
+        isGrabbing = false;
+    }
+    // ==========================================
 
     private bool OnSlope()
     {
@@ -250,7 +294,6 @@ public class PlayerMovement : MonoBehaviour
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
-
         return false;
     }
 
