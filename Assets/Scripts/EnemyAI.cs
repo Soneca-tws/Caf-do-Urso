@@ -6,15 +6,20 @@ public class EnemyAI : MonoBehaviour
 {
     public NavMeshAgent agent;
     public Transform player;
-    public LayerMask whatIsGround, whatIsPlayer;
+    
+    [Header("Detection Layers")]
+    public LayerMask whatIsGround;
+    public LayerMask whatIsPlayer;
+    public LayerMask whatIsObstacle; // NOVO: Layer para as paredes e obstáculos!
+
     public float health;
 
     [Header("State")]
-    public bool isDead; // Controla se o inimigo está vivo ou morto
-    public bool isGrabbed; // NOVO: Controla se o inimigo está sendo segurado pelo jogador
+    public bool isDead; 
+    public bool isGrabbed; 
 
     [Header("Debug State")]
-    public string currentState; // Mostra o estado atual da IA diretamente no Inspector
+    public string currentState; 
 
     // Patrulha
     public Vector3 walkPoint;
@@ -34,7 +39,7 @@ public class EnemyAI : MonoBehaviour
     // SISTEMA DE OBJECT POOLING
     // ==========================================
     [Header("Object Pooling")]
-    public int poolSize = 15; // Quantidade de balas pré-carregadas dentro do pool
+    public int poolSize = 15; 
     private List<GameObject> projectilePool;
 
     private void Awake()
@@ -42,27 +47,33 @@ public class EnemyAI : MonoBehaviour
         player = GameObject.Find("Player").transform;
         agent = GetComponent<NavMeshAgent>();
 
-        // 1. INICIALIZA O POOL
         projectilePool = new List<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
             GameObject obj = Instantiate(projectile);
-            obj.SetActive(false); // A bala nasce invisível/desligada
+            obj.SetActive(false); 
             projectilePool.Add(obj);
         }
     }
 
     private void Update()
     {
-        // Se o inimigo estiver morto OU sendo agarrado, ele ignora a IA de combate
         if (isDead || isGrabbed) 
         {
             if (isDead) currentState = "Dead";
             return;
         }
 
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        // 1. O "Radar" detecta se o player está na área
+        bool inSightSphere = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer);
+        bool inAttackSphere = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+
+        // 2. Confirma se não tem uma parede no meio do caminho!
+        bool canSeePlayer = HasLineOfSight();
+
+        // Só considera que viu/pode atacar se estiver no raio E tiver linha de visão
+        playerInSightRange = inSightSphere && canSeePlayer;
+        playerInAttackRange = inAttackSphere && canSeePlayer;
 
         if (!playerInSightRange && !playerInAttackRange) 
         {
@@ -82,68 +93,75 @@ public class EnemyAI : MonoBehaviour
     }
 
     // ==========================================
-    // NOVA MECÂNICA: AGARRAR (DASH KILL)
+    // LINHA DE VISÃO (RAYCAST)
     // ==========================================
-    private void OnCollisionEnter(Collision collision)
-{
-    if (isDead || isGrabbed) return;
-
-    if (collision.gameObject.CompareTag("Player"))
+    private bool HasLineOfSight()
     {
-        PlayerMovement pm = collision.gameObject.GetComponent<PlayerMovement>();
+        // Origem do olhar (na altura do peito/olhos do inimigo para não bater no chão)
+        Vector3 origin = transform.position + new Vector3(0f, 1.5f, 0f);
         
-        if (pm != null && pm.state == PlayerMovement.MovementState.dashing)
+        // Alvo (Peito do player)
+        Vector3 target = player.position + new Vector3(0f, 1.2f, 0f);
+        
+        Vector3 direction = (target - origin).normalized;
+        float distance = Vector3.Distance(origin, target);
+
+        // Dispara o raio verificando APENAS a layer das paredes
+        // Se bater em uma parede antes da distância do player, ele não está vendo
+        if (Physics.Raycast(origin, direction, distance, whatIsObstacle))
         {
-            // Congela o jogador por 1 segundo exato (mesmo tempo que o inimigo leva pra morrer)
-            pm.FreezePlayerForGrab(1f); 
+            // Debug visual opcional para você ver o raio bloqueado na Unity
+            Debug.DrawRay(origin, direction * distance, Color.red);
+            return false;
+        }
+
+        // Debug visual do raio conectando a visão (verde)
+        Debug.DrawRay(origin, direction * distance, Color.green);
+        return true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isDead || isGrabbed) return;
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerMovement pm = collision.gameObject.GetComponent<PlayerMovement>();
             
-            StartGrab();
+            if (pm != null && pm.state == PlayerMovement.MovementState.dashing)
+            {
+                pm.FreezePlayerForGrab(1f); 
+                StartGrab();
+            }
         }
     }
-}
 
     private void StartGrab()
     {
         isGrabbed = true;
         currentState = "Grabbed";
 
-        // 1. Para o agente de andar imediatamente
         if (agent.isOnNavMesh)
         {
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
         }
 
-        // 2. Desliga a colisão temporariamente para o corpo do inimigo não atrapalhar o movimento do player
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
-        // 3. Gruda o inimigo no jogador!
         transform.SetParent(player);
-        
-        // Posição: Fica exatamente 1.5 metros na frente do jogador (ajuste esse Z conforme a grossura do seu inimigo)
         transform.localPosition = new Vector3(0f, 0f, 1.5f); 
-        
-        // Faz o inimigo olhar para a mesma direção que o jogador (de costas pro player) ou olhar pro player
-        transform.localRotation = Quaternion.Euler(0, 180, 0); // Vira ele de frente para a câmera do jogador
-
-        // 4. Espera 1 segundo de paralisia e então solta e mata o inimigo
+        transform.localRotation = Quaternion.Euler(0, 180, 0); 
         Invoke(nameof(FinishGrabAndDie), 1f);
     }
 
     private void FinishGrabAndDie()
     {
-        // Desgruda o inimigo do jogador para o cadáver ficar no chão onde ele "morreu"
         transform.SetParent(null);
-        
-        // Opcional: religar o collider se quiser que o cadáver tenha física depois
-        
-        // Chama a morte normal do inimigo
         Die();
     }
-    // ==========================================
 
-    // 2. FUNÇÃO PARA PEGAR UMA BALA DISPONÍVEL
     private GameObject GetProjectileFromPool()
     {
         for (int i = 0; i < projectilePool.Count; i++)
