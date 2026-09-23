@@ -27,9 +27,16 @@ public class DialogueView : MonoBehaviour
         dialoguePanel.SetActive(true);
     }
 
+    [Header("Configurações")]
+    public bool manterAbertoAoFinal = true; // NOVO: Controla se o painel deve sumir ou ficar
+
     private void HidePanel()
     {
-        dialoguePanel.SetActive(false);
+        // Só esconde o painel se a caixinha NÃO estiver marcada
+        if (!manterAbertoAoFinal)
+        {
+            dialoguePanel.SetActive(false);
+        }
     }
 
     private void DisplayLine(DialogueLine line)

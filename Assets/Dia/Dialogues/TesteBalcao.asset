@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
-  - author: Pedro
-    text: WAZZUUUUUUUUUUUUUUUUUUUUUUUP
+  - author: "Rennan Gai\xE3o"
+    text: 'Eai Malandro Chamado pedro, beleza ? '
     tags: []
-  - author: Pedro
-    text: Boa noite genteeee, oi professor Rennaaan
+  - author: "Rennan Gai\xE3o"
+    text: "M\xEA v\xEA um caf\xE9 sem a\xE7ucar, To querendo Tirar essa mal\xE9za
+      do dia."
     tags: []

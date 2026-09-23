@@ -11,29 +11,18 @@ public class DialogueTrigger : MonoBehaviour
     {
         startButton.onClick.AddListener(() => 
         {
-            // Esconde o botão de iniciar para o jogador não clicar nele por acidente durante a fala
+            // Esconde o botão de iniciar para o jogador não clicar de novo
             startButton.gameObject.SetActive(false);
             
             // Inicia o diálogo
             runner.StartDialogue(sequenceToPlay);
         });
-
-        // Inscreve uma função para quando o diálogo acabar
-        runner.OnDialogueEnded += MostrarBotao;
     }
 
-    private void MostrarBotao()
+    // A função agora é pública e não acontece mais automaticamente.
+    // Você vai chamá-la no futuro, quando a câmera voltar para o balcão.
+    public void MostrarBotao()
     {
-        // Traz o botão de volta para a tela quando a conversa terminar
         startButton.gameObject.SetActive(true);
-    }
-
-    private void OnDestroy()
-    {
-        // Limpeza de segurança (boa prática na Unity ao usar eventos)
-        if (runner != null)
-        {
-            runner.OnDialogueEnded -= MostrarBotao;
-        }
     }
 }
