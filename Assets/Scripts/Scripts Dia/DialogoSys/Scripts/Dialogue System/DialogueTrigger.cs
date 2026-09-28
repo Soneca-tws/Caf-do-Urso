@@ -11,16 +11,21 @@ public class DialogueTrigger : MonoBehaviour
     {
         startButton.onClick.AddListener(() => 
         {
-            // Esconde o botão de iniciar para o jogador não clicar de novo
+            // Esconde o botão
             startButton.gameObject.SetActive(false);
+            
+            // ESSA É A LINHA CRÍTICA QUE DEVE ESTAR FALTANDO:
+            // Ela envia o "TesteBalcao" para o Gerente de Receita ler o feedback
+            if (ReceitaManager.Instancia != null)
+            {
+                ReceitaManager.Instancia.DefinirPedidoAtual(sequenceToPlay);
+            }
             
             // Inicia o diálogo
             runner.StartDialogue(sequenceToPlay);
         });
     }
 
-    // A função agora é pública e não acontece mais automaticamente.
-    // Você vai chamá-la no futuro, quando a câmera voltar para o balcão.
     public void MostrarBotao()
     {
         startButton.gameObject.SetActive(true);

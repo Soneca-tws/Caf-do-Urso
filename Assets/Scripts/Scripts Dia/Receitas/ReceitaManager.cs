@@ -21,6 +21,8 @@ public class ReceitaManager : MonoBehaviour
     public DialogueView interfaceDialogo; 
     private DialogueSequence pedidoAtual; 
 
+    private bool ultimoPreparoFoiSucesso;
+
     private void Awake()
     {
         Instancia = this;
@@ -60,16 +62,16 @@ public class ReceitaManager : MonoBehaviour
 
     public void PrepararBebida()
     {
-        // Exige apenas ser maior que zero (1, 2 ou 3 ingredientes)
         if (ingredientesSelecionados.Count > 0)
         {
-            bool acertou = ValidarReceita();
+            // 1. ANOTA O RESULTADO AQUI (antes de limpar a lista!)
+            ultimoPreparoFoiSucesso = ValidarReceita();
 
+            // 2. Limpa a mesa
             foreach (SelecaoIngrediente cubo in cubosAtivos)
             {
                 cubo.ResetarVisual();
             }
-            
             ingredientesSelecionados.Clear();
             cubosAtivos.Clear();
             AtualizarBotaoPronto();
@@ -96,17 +98,47 @@ public class ReceitaManager : MonoBehaviour
         if (pedidoAtual == null || pedidoAtual.receitaDesejada == null || pedidoAtual.receitaDesejada.Count == 0) 
             return true;
 
+        Debug.Log("--- INICIANDO VALIDAÇÃO ---");
+        
+        // 1. Mostra o que o cliente pediu
+        Debug.Log($"O cliente quer {pedidoAtual.receitaDesejada.Count} item(s):");
+        foreach(string item in pedidoAtual.receitaDesejada) 
+        { 
+            Debug.Log($"-> Pedido: [{item}]"); 
+        }
+
+        // 2. Mostra o que está na xícara
+        Debug.Log($"A xícara tem {ingredientesSelecionados.Count} item(s):");
+        foreach(string item in ingredientesSelecionados) 
+        { 
+            Debug.Log($"-> Xícara: [{item}]"); 
+        }
+
+        // 3. Verifica a quantidade
+        if (ingredientesSelecionados.Count != pedidoAtual.receitaDesejada.Count)
+        {
+            Debug.Log("Resultado: ERRO - Você colocou ingredientes a mais ou a menos.");
+            return false;
+        }
+
+        // 4. Verifica os nomes
         foreach (string itemDesejado in pedidoAtual.receitaDesejada)
         {
-            if (!ingredientesSelecionados.Contains(itemDesejado)) return false; 
+            if (!ingredientesSelecionados.Contains(itemDesejado)) 
+            {
+                Debug.Log($"Resultado: ERRO - O item [{itemDesejado}] não foi reconhecido na xícara.");
+                return false; 
+            }
         }
         
+        Debug.Log("Resultado: SUCESSO - A receita bateu 100%!");
         return true; 
     }
 
     private void TocarFeedback()
     {
-        DialogueSequence resposta = ValidarReceita() ? pedidoAtual.dialogoSucesso : pedidoAtual.dialogoErro;
+        // Usa a anotação que fizemos lá em cima, em vez de validar a xícara vazia de novo
+        DialogueSequence resposta = ultimoPreparoFoiSucesso ? pedidoAtual.dialogoSucesso : pedidoAtual.dialogoErro;
         
         if (resposta != null && resposta.lines != null && resposta.lines.Count > 0 && dialogueRunner != null)
         {
