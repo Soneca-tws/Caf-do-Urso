@@ -58,4 +58,26 @@ public class SelecaoIngrediente : MonoBehaviour
         if (meshRenderer != null) meshRenderer.material.color = corNormal;
         transform.localPosition = posicaoOriginal;
     }
+
+    [Header("Inspeção")]
+    [TextArea(2, 4)]
+    public string descricaoIngrediente; // Escreva a descrição no Inspector da Unity
+
+    // A Unity deteta quando o ponteiro do rato entra no Collider do objeto
+    private void OnMouseEnter()
+    {
+        if (DialogueView.Instancia != null)
+        {
+            DialogueView.Instancia.MostrarInspecao(nomeIngrediente, descricaoIngrediente);
+        }
+    }
+
+    // A Unity deteta quando o ponteiro do rato sai do Collider
+    private void OnMouseExit()
+    {
+        if (DialogueView.Instancia != null)
+        {
+            DialogueView.Instancia.OcultarInspecao();
+        }
+    }
 }

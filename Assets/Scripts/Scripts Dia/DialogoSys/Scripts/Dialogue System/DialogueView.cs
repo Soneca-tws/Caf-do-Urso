@@ -56,4 +56,49 @@ public class DialogueView : MonoBehaviour
 
         dialogueText.text = line.text;
     }
+
+    public void ForcarFechamento()
+    {
+        dialoguePanel.SetActive(false);
+    }
+
+    // Adicione isto no topo das variáveis da classe
+    public static DialogueView Instancia; 
+
+    private string textoSalvo = "";
+    private string autorSalvo = "";
+    private bool aInspecionar = false;
+
+    // Se já tiver um Awake(), adicione apenas a linha Instancia = this; dentro dele
+    private void Awake()
+    {
+        Instancia = this;
+    }
+
+    // Função para substituir o texto temporariamente
+    public void MostrarInspecao(string titulo, string descricao)
+    {
+        if (!aInspecionar)
+        {
+            // Guarda o texto atual do cliente
+            // ATENÇÃO: Substitua 'authorText' e 'dialogueText' pelos nomes exatos das suas variáveis de UI (TextMeshProUGUI)
+            autorSalvo = authorText.text; 
+            textoSalvo = dialogueText.text; 
+            aInspecionar = true;
+        }
+
+        authorText.text = titulo;
+        dialogueText.text = descricao;
+    }
+
+    // Função para repor o texto original
+    public void OcultarInspecao()
+    {
+        if (aInspecionar)
+        {
+            authorText.text = autorSalvo;
+            dialogueText.text = textoSalvo;
+            aInspecionar = false;
+        }
+    }
 }

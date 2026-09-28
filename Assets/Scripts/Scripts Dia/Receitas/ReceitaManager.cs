@@ -11,10 +11,15 @@ public class ReceitaManager : MonoBehaviour
     private List<SelecaoIngrediente> cubosAtivos = new List<SelecaoIngrediente>();
 
     [Header("Interface")]
-    public GameObject botaoPronto; // Arraste o botão da UI para cá
+    public GameObject botaoPronto;
 
     [Header("Referências")]
     public CameraTransition transicaoCamera; 
+
+    [Header("Sistema de Pedidos")]
+    public DialogueRunner dialogueRunner; 
+    public DialogueView interfaceDialogo; // NOVO: Referência para limpar a tela
+    private DialogueSequence pedidoAtual; 
 
     private void Awake()
     {
@@ -23,8 +28,12 @@ public class ReceitaManager : MonoBehaviour
 
     private void Start()
     {
-        // Garante que o botão comece desligado quando o jogo rodar
         AtualizarBotaoPronto();
+    }
+
+    public void DefinirPedidoAtual(DialogueSequence novoPedido)
+    {
+        pedidoAtual = novoPedido;
     }
 
     public bool TentarAdicionar(string ingrediente, SelecaoIngrediente cubo)
@@ -33,13 +42,9 @@ public class ReceitaManager : MonoBehaviour
         {
             ingredientesSelecionados.Add(ingrediente);
             cubosAtivos.Add(cubo); 
-            Debug.Log($"[{ingredientesSelecionados.Count}/3] {ingrediente} adicionado.");
-            
-            AtualizarBotaoPronto(); // Checa se deve mostrar o botão
+            AtualizarBotaoPronto(); 
             return true;
         }
-        
-        Debug.Log("Limite atingido! Desmarque algo primeiro.");
         return false;
     }
 
@@ -49,9 +54,7 @@ public class ReceitaManager : MonoBehaviour
         {
             ingredientesSelecionados.Remove(ingrediente);
             cubosAtivos.Remove(cubo); 
-            Debug.Log($"[{ingredientesSelecionados.Count}/3] {ingrediente} removido.");
-            
-            AtualizarBotaoPronto(); // Checa se deve esconder o botão
+            AtualizarBotaoPronto(); 
         }
     }
 
@@ -59,36 +62,68 @@ public class ReceitaManager : MonoBehaviour
     {
         if (ingredientesSelecionados.Count == limiteIngredientes)
         {
-            Debug.Log("Café finalizado com: " + string.Join(", ", ingredientesSelecionados));
-            
-            // Limpa o visual dos cubos
+            bool acertou = ValidarReceita();
+
             foreach (SelecaoIngrediente cubo in cubosAtivos)
             {
                 cubo.ResetarVisual();
             }
             
-            // Zera a memória do gerente
             ingredientesSelecionados.Clear();
             cubosAtivos.Clear();
-
-            // Esconde o botão para o próximo cliente
             AtualizarBotaoPronto();
+
+            // NOVO: Apaga o diálogo antigo imediatamente
+            if (interfaceDialogo != null)
+            {
+                interfaceDialogo.ForcarFechamento();
+            }
 
             if (transicaoCamera != null)
             {
                 transicaoCamera.IrParaBalcao();
             }
+
+            if (pedidoAtual != null)
+            {
+                Invoke(nameof(TocarFeedback), 0.5f); 
+            }
         }
     }
 
-    // Função que liga ou desliga o botão baseado na quantidade
+    private bool ValidarReceita()
+    {
+        if (pedidoAtual == null || pedidoAtual.receitaDesejada == null || pedidoAtual.receitaDesejada.Count == 0) 
+            return true;
+
+        foreach (string itemDesejado in pedidoAtual.receitaDesejada)
+        {
+            if (!ingredientesSelecionados.Contains(itemDesejado)) return false; 
+        }
+        
+        return true; 
+    }
+
+    private void TocarFeedback()
+    {
+        DialogueSequence resposta = ValidarReceita() ? pedidoAtual.dialogoSucesso : pedidoAtual.dialogoErro;
+        
+        // NOVO: Proteção contra campos vazios no Inspector
+        if (resposta != null && resposta.lines != null && resposta.lines.Count > 0 && dialogueRunner != null)
+        {
+            dialogueRunner.StartDialogue(resposta);
+        }
+        else
+        {
+            Debug.LogWarning("Aviso: O diálogo de resposta está vazio no Inspector!");
+        }
+    }
+
     private void AtualizarBotaoPronto()
     {
         if (botaoPronto != null)
         {
-            // O botão só fica ativo (true) se a quantidade for exatamente 3
-            bool prontoParaEntregar = ingredientesSelecionados.Count == limiteIngredientes;
-            botaoPronto.SetActive(prontoParaEntregar);
+            botaoPronto.SetActive(ingredientesSelecionados.Count == limiteIngredientes);
         }
     }
 }

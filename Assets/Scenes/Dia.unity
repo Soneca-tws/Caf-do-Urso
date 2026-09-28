@@ -172,6 +172,7 @@ MonoBehaviour:
   corNormal: {r: 1, g: 1, b: 1, a: 1}
   corSelecionado: {r: 0, g: 1, b: 0, a: 1}
   alturaSelecionado: 0.5
+  descricaoIngrediente: O maior perigo dos intolerantes a lactose.
 --- !u!65 &5173728
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -725,6 +726,7 @@ MonoBehaviour:
   corNormal: {r: 1, g: 1, b: 1, a: 1}
   corSelecionado: {r: 0, g: 1, b: 0, a: 1}
   alturaSelecionado: 0.5
+  descricaoIngrediente: "O dia s\xF3 come\xE7a de verdade depois de um desse"
 --- !u!65 &200567233
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2353,6 +2355,7 @@ MonoBehaviour:
   corNormal: {r: 1, g: 1, b: 1, a: 1}
   corSelecionado: {r: 0, g: 1, b: 0, a: 1}
   alturaSelecionado: 0.5
+  descricaoIngrediente: "Pra quando voc\xEA quer botar a cabe\xE7a no lugar"
 --- !u!65 &1170410076
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2642,6 +2645,7 @@ MonoBehaviour:
   corNormal: {r: 1, g: 1, b: 1, a: 1}
   corSelecionado: {r: 0, g: 1, b: 0, a: 1}
   alturaSelecionado: 0.5
+  descricaoIngrediente: "N\xE3o tem como odiar"
 --- !u!65 &1251491668
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2969,6 +2973,8 @@ MonoBehaviour:
   ingredientesSelecionados: []
   botaoPronto: {fileID: 463325735}
   transicaoCamera: {fileID: 1432023960}
+  dialogueRunner: {fileID: 1700102696}
+  interfaceDialogo: {fileID: 1037468272}
 --- !u!1 &1560455654
 GameObject:
   m_ObjectHideFlags: 0
@@ -3022,6 +3028,8 @@ MonoBehaviour:
   corNormal: {r: 1, g: 1, b: 1, a: 1}
   corSelecionado: {r: 0, g: 1, b: 0, a: 1}
   alturaSelecionado: 0.5
+  descricaoIngrediente: "A vida j\xE1 \xE9 amarga demais, a\xE7ucar \xE9 essencial
+    para alegrar o dia de qualquer um."
 --- !u!65 &1560455657
 BoxCollider:
   m_ObjectHideFlags: 0
