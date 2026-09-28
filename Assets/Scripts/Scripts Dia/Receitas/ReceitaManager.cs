@@ -18,7 +18,7 @@ public class ReceitaManager : MonoBehaviour
 
     [Header("Sistema de Pedidos")]
     public DialogueRunner dialogueRunner; 
-    public DialogueView interfaceDialogo; // NOVO: Referência para limpar a tela
+    public DialogueView interfaceDialogo; 
     private DialogueSequence pedidoAtual; 
 
     private void Awake()
@@ -60,7 +60,8 @@ public class ReceitaManager : MonoBehaviour
 
     public void PrepararBebida()
     {
-        if (ingredientesSelecionados.Count == limiteIngredientes)
+        // Exige apenas ser maior que zero (1, 2 ou 3 ingredientes)
+        if (ingredientesSelecionados.Count > 0)
         {
             bool acertou = ValidarReceita();
 
@@ -73,7 +74,6 @@ public class ReceitaManager : MonoBehaviour
             cubosAtivos.Clear();
             AtualizarBotaoPronto();
 
-            // NOVO: Apaga o diálogo antigo imediatamente
             if (interfaceDialogo != null)
             {
                 interfaceDialogo.ForcarFechamento();
@@ -108,7 +108,6 @@ public class ReceitaManager : MonoBehaviour
     {
         DialogueSequence resposta = ValidarReceita() ? pedidoAtual.dialogoSucesso : pedidoAtual.dialogoErro;
         
-        // NOVO: Proteção contra campos vazios no Inspector
         if (resposta != null && resposta.lines != null && resposta.lines.Count > 0 && dialogueRunner != null)
         {
             dialogueRunner.StartDialogue(resposta);
@@ -119,11 +118,14 @@ public class ReceitaManager : MonoBehaviour
         }
     }
 
+    // Deixamos apenas UMA versão desta função!
     private void AtualizarBotaoPronto()
     {
         if (botaoPronto != null)
         {
-            botaoPronto.SetActive(ingredientesSelecionados.Count == limiteIngredientes);
+            // O botão fica ativo (true) se houver pelo menos 1 item selecionado
+            bool prontoParaEntregar = ingredientesSelecionados.Count > 0;
+            botaoPronto.SetActive(prontoParaEntregar);
         }
     }
 }

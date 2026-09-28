@@ -23,7 +23,5 @@ MonoBehaviour:
     tags: []
   receitaDesejada:
   - "Caf\xE9"
-  - "A\xE7ucar"
-  - Leite
   dialogoSucesso: {fileID: 11400000, guid: 7be568dd4c6cb064c9726c20ba8b920b, type: 2}
   dialogoErro: {fileID: 11400000, guid: a7726c283fde6dd47a69d52ab6dda12a, type: 2}
