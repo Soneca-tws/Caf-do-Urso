@@ -15,9 +15,15 @@ MonoBehaviour:
   sequenceID: 
   lines:
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: 'Eai Malandro Chamado pedro, beleza ? '
     tags: []
+  - author: "Ot\xE1vio"
+    ehOBarista: 1
+    text: "Se n\xE3o \xE9 o coordenador mais bonito de jogos digitaaaaais, eai rennaaan"
+    tags: []
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: "M\xEA v\xEA um caf\xE9 sem a\xE7ucar, To querendo Tirar essa mal\xE9za
       do dia."
     tags: []

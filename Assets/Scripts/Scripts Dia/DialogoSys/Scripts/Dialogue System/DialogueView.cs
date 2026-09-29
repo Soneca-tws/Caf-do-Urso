@@ -3,10 +3,24 @@ using TMPro;
 
 public class DialogueView : MonoBehaviour
 {
+    public static DialogueView Instancia; 
+
     [SerializeField] private DialogueRunner runner;
     [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private TextMeshProUGUI authorText;
     [SerializeField] private TextMeshProUGUI dialogueText;
+
+    [Header("Configurações")]
+    public bool manterAbertoAoFinal = true; 
+
+    private string textoSalvo = "";
+    private string autorSalvo = "";
+    private bool aInspecionar = false;
+
+    private void Awake()
+    {
+        Instancia = this;
+    }
 
     private void OnEnable()
     {
@@ -27,12 +41,8 @@ public class DialogueView : MonoBehaviour
         dialoguePanel.SetActive(true);
     }
 
-    [Header("Configurações")]
-    public bool manterAbertoAoFinal = true; // NOVO: Controla se o painel deve sumir ou ficar
-
     private void HidePanel()
     {
-        // Só esconde o painel se a caixinha NÃO estiver marcada
         if (!manterAbertoAoFinal)
         {
             dialoguePanel.SetActive(false);
@@ -45,12 +55,21 @@ public class DialogueView : MonoBehaviour
 
         if (authorText != null)
         {
-
             authorText.gameObject.SetActive(hasAuthor);
 
             if (hasAuthor)
             {
                 authorText.text = line.author;
+
+                // Lógica visual para destacar o Barista (Pedro)
+                if (line.ehOBarista)
+                {
+                    authorText.color = Color.cyan; 
+                }
+                else
+                {
+                    authorText.color = Color.white; 
+                }
             }
         }
 
@@ -62,26 +81,10 @@ public class DialogueView : MonoBehaviour
         dialoguePanel.SetActive(false);
     }
 
-    // Adicione isto no topo das variáveis da classe
-    public static DialogueView Instancia; 
-
-    private string textoSalvo = "";
-    private string autorSalvo = "";
-    private bool aInspecionar = false;
-
-    // Se já tiver um Awake(), adicione apenas a linha Instancia = this; dentro dele
-    private void Awake()
-    {
-        Instancia = this;
-    }
-
-    // Função para substituir o texto temporariamente
     public void MostrarInspecao(string titulo, string descricao)
     {
         if (!aInspecionar)
         {
-            // Guarda o texto atual do cliente
-            // ATENÇÃO: Substitua 'authorText' e 'dialogueText' pelos nomes exatos das suas variáveis de UI (TextMeshProUGUI)
             autorSalvo = authorText.text; 
             textoSalvo = dialogueText.text; 
             aInspecionar = true;
@@ -91,7 +94,6 @@ public class DialogueView : MonoBehaviour
         dialogueText.text = descricao;
     }
 
-    // Função para repor o texto original
     public void OcultarInspecao()
     {
         if (aInspecionar)

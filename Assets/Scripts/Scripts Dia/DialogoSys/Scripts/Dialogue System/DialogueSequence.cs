@@ -5,6 +5,7 @@ using UnityEngine;
 public struct DialogueLine
 {
     public string author;
+    public bool ehOBarista; // A caixinha do Pedro fica aqui!
     [TextArea(3, 10)] public string text;
     public string[] tags; 
 }

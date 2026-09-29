@@ -15,17 +15,30 @@ MonoBehaviour:
   sequenceID: 
   lines:
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: "\xC9 malandro chamado pedro, at\xE9 que tu faz um caf\xE9zinho bom viu."
     tags: []
+  - author: "Ot\xE1vio"
+    ehOBarista: 1
+    text: "Que bom que voc\xEA curtiu v\xE9i "
+    tags: []
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: "Mas po, d\xE1 uma aprumada nesse lugar po, assim fica fogo de tu vender
       teu caf\xE9."
     tags: []
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: "O lugar todo blocado, po at\xE9 tua cafeteira \xE9 um quadrado, assim
       tu me complica viu."
     tags: []
+  - author: "Ot\xE1vio"
+    ehOBarista: 1
+    text: "\xC9 assim complica mesmo ... mas to correndo atr\xE1s pra deixar isso
+      aqui bonito viu voc\xEA vai ver."
+    tags: []
   - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
     text: "To vendo que aqui tu desenrolou at\xE9, bora ver como t\xE1 ao anoitecer,
       to de olho viu."
     tags: []
