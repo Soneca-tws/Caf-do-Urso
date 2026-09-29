@@ -10,18 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 129a4780d050d9f47944009b59871d3c, type: 3}
-  m_Name: TesteBalcao
+  m_Name: TesteBOM
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
   - author: "Rennan Gai\xE3o"
-    text: 'Eai Malandro Chamado pedro, beleza ? '
+    text: AI SIIIIIIIIIM
     tags: []
-  - author: "Rennan Gai\xE3o"
-    text: "M\xEA v\xEA um caf\xE9 sem a\xE7ucar, To querendo Tirar essa mal\xE9za
-      do dia."
-    tags: []
-  receitaDesejada:
-  - "Caf\xE9"
-  dialogoSucesso: {fileID: 11400000, guid: 7be568dd4c6cb064c9726c20ba8b920b, type: 2}
-  dialogoErro: {fileID: 11400000, guid: a7726c283fde6dd47a69d52ab6dda12a, type: 2}
+  proximoDialogo: {fileID: 11400000, guid: 4a083b860004e614e890e596aae3d5b6, type: 2}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}

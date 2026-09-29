@@ -77,9 +77,23 @@ public class DialogueRunner : MonoBehaviour
 
     private void EndDialogue()
     {
+        // Guarda a referência do próximo diálogo antes de limpar a sequência atual
+        DialogueSequence proximoNaFila = currentSequence != null ? currentSequence.proximoDialogo : null;
+
         isPlaying = false;
         currentSequence = null;
         isSingleLineMode = false;
-        OnDialogueEnded?.Invoke();
+
+        // Se houver um diálogo pendurado, inicia a próxima conversa automaticamente!
+        if (proximoNaFila != null)
+        {
+            StartDialogue(proximoNaFila);
+        }
+        else
+        {
+            // SÓ AVISA o resto do jogo que acabou se não houver mais nada na fila!
+            // É isso que vai impedir a câmara de fugir para a prateleira antes do tempo.
+            OnDialogueEnded?.Invoke();
+        }
     }
 }
