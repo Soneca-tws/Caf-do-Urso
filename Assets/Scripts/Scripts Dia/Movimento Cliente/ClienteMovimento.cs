@@ -8,8 +8,8 @@ public class ClienteMovimento : MonoBehaviour
     public float velocidade = 3f;
 
     [Header("Interação")]
-    [Tooltip("Arraste o botão de iniciar diálogo para cá")]
-    public GameObject botaoFalar; 
+    [Tooltip("Arraste o objeto que tem o script DialogueTrigger para cá")]
+    public DialogueTrigger gatilhoDialogo; 
 
     private bool chegouNoBalcao = false;
 
@@ -20,30 +20,24 @@ public class ClienteMovimento : MonoBehaviour
         {
             transform.position = pontoPorta.position;
         }
-        
-        // Esconde o botão de falar até o cliente chegar
-        if (botaoFalar != null) 
-        {
-            botaoFalar.SetActive(false);
-        }
     }
 
     private void Update()
     {
         if (!chegouNoBalcao && pontoBalcao != null)
         {
-            // Move a cápsula um pouco a cada frame na direção do balcão
+            // Move a cápsula em direção ao balcão
             transform.position = Vector3.MoveTowards(transform.position, pontoBalcao.position, velocidade * Time.deltaTime);
 
-            // Calcula a distância. Se for menor que 0.1, ele chegou
+            // Verifica se chegou
             if (Vector3.Distance(transform.position, pontoBalcao.position) < 0.1f)
             {
                 chegouNoBalcao = true;
                 
-                // Mostra o botão para o jogador poder atender
-                if (botaoFalar != null) 
+                // Dispara o diálogo automaticamente!
+                if (gatilhoDialogo != null) 
                 {
-                    botaoFalar.SetActive(true);
+                    gatilhoDialogo.IniciarConversa();
                 }
             }
         }
