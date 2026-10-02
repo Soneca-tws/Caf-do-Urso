@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 129a4780d050d9f47944009b59871d3c, type: 3}
+  m_Name: TesteBalcao
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
+    text: 'Eai Malandro Chamado pedro, beleza ? '
+    tags: []
+  - author: "Ot\xE1vio"
+    ehOBarista: 1
+    text: "Se n\xE3o \xE9 o coordenador mais bonito de jogos digitaaaaais, eai rennaaan"
+    tags: []
+  - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
+    text: "M\xEA v\xEA um caf\xE9 sem a\xE7ucar, To querendo Tirar essa mal\xE9za
+      do dia."
+    tags: []
+  proximoDialogo: {fileID: 0}
+  receitaDesejada:
+  - "Caf\xE9"
+  dialogoSucesso: {fileID: 11400000, guid: 7be568dd4c6cb064c9726c20ba8b920b, type: 2}
+  dialogoErro: {fileID: 11400000, guid: a7726c283fde6dd47a69d52ab6dda12a, type: 2}
