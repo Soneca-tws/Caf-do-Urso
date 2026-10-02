@@ -64,27 +64,27 @@ public class ReceitaManager : MonoBehaviour
     {
         if (ingredientesSelecionados.Count > 0)
         {
-            // 1. ANOTA O RESULTADO AQUI (antes de limpar a lista!)
             ultimoPreparoFoiSucesso = ValidarReceita();
 
-            // 2. Limpa a mesa
+            // --- NOVO: AVISA O CLIENTE QUE ELE JÁ TEM O CAFÉ ---
+            ClienteMovimento cliente = Object.FindFirstObjectByType<ClienteMovimento>();
+            if (cliente != null)
+            {
+                cliente.ReceberCafe();
+            }
+            // ----------------------------------------------------
+
             foreach (SelecaoIngrediente cubo in cubosAtivos)
             {
                 cubo.ResetarVisual();
             }
+            
             ingredientesSelecionados.Clear();
             cubosAtivos.Clear();
             AtualizarBotaoPronto();
 
-            if (interfaceDialogo != null)
-            {
-                interfaceDialogo.ForcarFechamento();
-            }
-
-            if (transicaoCamera != null)
-            {
-                transicaoCamera.IrParaBalcao();
-            }
+            if (interfaceDialogo != null) interfaceDialogo.ForcarFechamento();
+            if (transicaoCamera != null) transicaoCamera.IrParaBalcao();
 
             if (pedidoAtual != null)
             {

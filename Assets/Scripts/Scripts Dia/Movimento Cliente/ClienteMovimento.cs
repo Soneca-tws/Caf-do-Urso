@@ -8,38 +8,72 @@ public class ClienteMovimento : MonoBehaviour
     public float velocidade = 3f;
 
     [Header("Interação")]
-    [Tooltip("Arraste o objeto que tem o script DialogueTrigger para cá")]
     public DialogueTrigger gatilhoDialogo; 
+    public DialogueRunner runner; 
 
     private bool chegouNoBalcao = false;
+    private bool indoEmbora = false; 
+    private bool jaPegouCafe = false; // NOVO: Impede que ele fuja antes da hora!
+
+    private void OnEnable()
+    {
+        if (runner != null) runner.OnDialogueEnded += IniciarSaida;
+    }
+
+    private void OnDisable()
+    {
+        if (runner != null) runner.OnDialogueEnded -= IniciarSaida;
+    }
 
     private void Start()
     {
-        // Posiciona o cliente na porta no início do jogo
-        if (pontoPorta != null)
-        {
-            transform.position = pontoPorta.position;
-        }
+        if (pontoPorta != null) transform.position = pontoPorta.position;
     }
 
     private void Update()
     {
-        if (!chegouNoBalcao && pontoBalcao != null)
+        if (!chegouNoBalcao && !indoEmbora && pontoBalcao != null)
         {
-            // Move a cápsula em direção ao balcão
             transform.position = Vector3.MoveTowards(transform.position, pontoBalcao.position, velocidade * Time.deltaTime);
 
-            // Verifica se chegou
-            if (Vector3.Distance(transform.position, pontoBalcao.position) < 0.1f)
+            if (Vector3.Distance(transform.position, pontoBalcao.position) < 0.5f)
             {
                 chegouNoBalcao = true;
-                
-                // Dispara o diálogo automaticamente!
-                if (gatilhoDialogo != null) 
-                {
-                    gatilhoDialogo.IniciarConversa();
-                }
+                if (gatilhoDialogo != null) gatilhoDialogo.IniciarConversa();
             }
+        }
+        else if (indoEmbora && pontoPorta != null)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, pontoPorta.position, velocidade * Time.deltaTime);
+
+            if (Vector3.Distance(transform.position, pontoPorta.position) < 0.5f)
+            {
+                if (FadeManager.Instancia != null) FadeManager.Instancia.TransicaoParaNoite();
+                gameObject.SetActive(false); 
+            }
+        }
+    }
+
+    // Função para avisar o cliente que a bebida foi entregue
+    public void ReceberCafe()
+    {
+        jaPegouCafe = true;
+
+        // NOVO: Nós avisamos a câmara BEM ANTES do último diálogo acabar!
+        // Assim, quando o diálogo terminar, a câmara já vai estar travada.
+        CameraTransition camera = Object.FindAnyObjectByType<CameraTransition>();
+        if (camera != null)
+        {
+            camera.FinalizarExpediente();
+        }
+    }
+
+    public void IniciarSaida()
+    {
+        // Agora o cliente apenas vira as costas e vai embora
+        if (jaPegouCafe)
+        {
+            indoEmbora = true;
         }
     }
 }

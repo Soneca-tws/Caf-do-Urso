@@ -10,11 +10,11 @@ public class CameraTransition : MonoBehaviour
     public float velocidadeTransicao = 3f;
 
     [Header("Integração de Diálogo")]
-    public DialogueRunner runner; // Arraste o seu DialogueManager aqui!
+    public DialogueRunner runner; 
 
     private Coroutine transicaoAtual;
+    private bool travarMovimentoPrateleira = false; 
 
-    // Se inscreve para escutar quando o diálogo acaba
     private void OnEnable()
     {
         if (runner != null)
@@ -23,7 +23,6 @@ public class CameraTransition : MonoBehaviour
         }
     }
 
-    // Boa prática: sempre se desinscrever no OnDisable
     private void OnDisable()
     {
         if (runner != null)
@@ -32,17 +31,25 @@ public class CameraTransition : MonoBehaviour
         }
     }
 
-    // Agora são funções separadas para você poder voltar para o balcão depois!
-    public void IrParaPrateleira()
-    {
-        if (transicaoAtual != null) StopCoroutine(transicaoAtual);
-        transicaoAtual = StartCoroutine(MoverCamera(visaoPrateleira));
-    }
-
     public void IrParaBalcao()
     {
         if (transicaoAtual != null) StopCoroutine(transicaoAtual);
         transicaoAtual = StartCoroutine(MoverCamera(visaoBalcao));
+    }
+
+    public void IrParaPrateleira()
+    {
+        // Se a trava estiver ativa, a câmera recusa a ordem
+        if (travarMovimentoPrateleira) return; 
+
+        if (transicaoAtual != null) StopCoroutine(transicaoAtual);
+        transicaoAtual = StartCoroutine(MoverCamera(visaoPrateleira));
+    }
+    
+    // Função pública para o ClienteMovimento ativar a trava
+    public void FinalizarExpediente()
+    {
+        travarMovimentoPrateleira = true;
     }
 
     private IEnumerator MoverCamera(Transform alvo)

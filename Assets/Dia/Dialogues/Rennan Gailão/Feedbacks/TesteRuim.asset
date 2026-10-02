@@ -15,8 +15,14 @@ MonoBehaviour:
   sequenceID: 
   lines:
   - author: "Rennan Gai\xE3o"
-    text: "POOO V\xC9I ECAA"
+    ehOBarista: 0
+    text: "Qual foi ot\xE1vio, eu n\xE3o pedi isso"
     tags: []
+  - author: "Rennan Gai\xE3o"
+    ehOBarista: 0
+    text: 'Desse Jeito eu vou ter que te reprovar '
+    tags: []
+  proximoDialogo: {fileID: 11400000, guid: 64cbbe952aacd814cb6d25440220a805, type: 2}
   receitaDesejada: []
   dialogoSucesso: {fileID: 0}
   dialogoErro: {fileID: 0}
