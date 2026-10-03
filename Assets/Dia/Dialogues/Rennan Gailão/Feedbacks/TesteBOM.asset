@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
+    ehOBarista: 0
     text: AI SIIIIIIIIIM
     tags: []
   proximoDialogo: {fileID: 11400000, guid: 4a083b860004e614e890e596aae3d5b6, type: 2}

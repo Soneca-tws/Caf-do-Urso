@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: "\xC9 malandro chamado pedro, \xC9 bom tu sair do ramo do caf\xE9 e ficar
       s\xF3 nos jogos viu."
@@ -23,12 +23,12 @@ MonoBehaviour:
     ehOBarista: 1
     text: "po rennan ... foi mal v\xE9i eu me confundi....."
     tags: []
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: "t\xE1 bom v\xE9i relaxa, d\xE1 uma aprumada nesse lugar po, melhora essa
       tua habilidade de fazer caf\xE9 pra ver se aqui come\xE7a a fazer sucesso"
     tags: []
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: "O lugar t\xE1 todo blocado, po at\xE9 tua cafeteira \xE9 um quadrado,
       assim tu me complica viu."
@@ -38,7 +38,7 @@ MonoBehaviour:
     text: "\xC9 assim complica mesmo ... mas to correndo atr\xE1s pra deixar isso
       aqui bonito viu voc\xEA vai ver."
     tags: []
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: To de olho viu.
     tags: []

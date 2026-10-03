@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: "Qual foi ot\xE1vio, eu n\xE3o pedi isso"
     tags: []
-  - author: "Rennan Gai\xE3o"
+  - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: 'Desse Jeito eu vou ter que te reprovar '
     tags: []
