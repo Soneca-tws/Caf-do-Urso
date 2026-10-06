@@ -6,8 +6,11 @@ public class MachineSabotage : MonoBehaviour
     public float maxHealth = 100f;
     [SerializeField] private float currentHealth;
 
+    [Header("Interface")]
+    public GameObject telaDeVitoria; // NOVO: Arraste o seu PainelVitoria para cá na Unity
+
     [Header("Debug State")]
-    public string currentState; // Mostra o estado atual da máquina no Inspector
+    public string currentState;
 
     [Header("Visuals (Optional)")]
     public Renderer machineRenderer;
@@ -16,12 +19,11 @@ public class MachineSabotage : MonoBehaviour
 
     private bool isSabotaged = false;
 
-    // Estados possíveis da máquina
     public enum MachineState
     {
-        Intact,     // Funcionando normalmente
-        Sabotaged,  // Vida chegou a zero / sabotada
-        Disabled    // Desligada completamente
+        Intact,     
+        Sabotaged,  
+        Disabled    
     }
 
     public MachineState state;
@@ -32,7 +34,6 @@ public class MachineSabotage : MonoBehaviour
         state = MachineState.Intact;
         currentState = "Intact";
 
-        // Define o visual inicial se houver um material configurado
         if (machineRenderer != null && intactMaterial != null)
         {
             machineRenderer.material = intactMaterial;
@@ -41,17 +42,14 @@ public class MachineSabotage : MonoBehaviour
 
     private void Update()
     {
-        // Máquina de Estados simples para a Máquina
         switch (state)
         {
             case MachineState.Intact:
                 currentState = "Intact";
-                // Lógica da máquina funcionando normalmente (se houver)
                 break;
 
             case MachineState.Sabotaged:
                 currentState = "Sabotaged";
-                // Lógica da máquina sabotada (soltando fumaça, gerando alerta, etc.)
                 break;
 
             case MachineState.Disabled:
@@ -60,10 +58,8 @@ public class MachineSabotage : MonoBehaviour
         }
     }
 
-    // Método chamado pelo tiro da escopeta (igualzinho ao TakeDamage do inimigo)
     public void TakeDamage(int damage)
     {
-        // Se já foi sabotada, ignorar novos tiros
         if (isSabotaged) return;
 
         currentHealth -= damage;
@@ -71,7 +67,6 @@ public class MachineSabotage : MonoBehaviour
 
         Debug.Log("A máquina sofreu dano! Vida restante: " + currentHealth);
 
-        // Se a vida acabou, ativa o estado de sabotagem
         if (currentHealth <= 0f)
         {
             SabotageMachine();
@@ -83,7 +78,6 @@ public class MachineSabotage : MonoBehaviour
         isSabotaged = true;
         state = MachineState.Sabotaged;
 
-        // Muda a cor/material da máquina para indicar que foi sabotada
         if (machineRenderer != null && sabotagedMaterial != null)
         {
             machineRenderer.material = sabotagedMaterial;
@@ -91,6 +85,17 @@ public class MachineSabotage : MonoBehaviour
 
         Debug.Log("A máquina foi completamente sabotada!");
 
-        // Aqui você pode disparar eventos do jogo, abrir portas, desativar alarmes, etc.
+        // --- NOVO: Ativa a tela verde de Vitória ---
+        if (telaDeVitoria != null)
+        {
+            telaDeVitoria.SetActive(true);
+            
+            // Destrava o mouse para clicar em possíveis botões
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
+            // Pausa o jogo
+            Time.timeScale = 0f; 
+        }
     }
 }
