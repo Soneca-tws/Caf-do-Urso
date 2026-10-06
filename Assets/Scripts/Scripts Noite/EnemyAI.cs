@@ -218,7 +218,10 @@ public class EnemyAI : MonoBehaviour
         {
             GameObject bullet = GetProjectileFromPool();
             
-            bullet.transform.position = transform.position + new Vector3(0f, 1.5f, 0f);
+            // 1. Guardamos a posição de onde a bala vai nascer (altura da arma/peito)
+            Vector3 spawnPosition = transform.position + new Vector3(0f, 1.5f, 0f);
+            
+            bullet.transform.position = spawnPosition;
             bullet.transform.rotation = Quaternion.identity;
             bullet.SetActive(true); 
 
@@ -227,8 +230,11 @@ public class EnemyAI : MonoBehaviour
             rb.linearVelocity = Vector3.zero; 
             rb.angularVelocity = Vector3.zero;
 
+            // 2. Definimos o alvo (peito do player)
             Vector3 aimTarget = new Vector3(player.position.x, player.position.y + 1.2f, player.position.z);
-            Vector3 aimDirection = (aimTarget - transform.position).normalized;
+            
+            // 3. A GRANDE CORREÇÃO: A direção agora é calculada da POSIÇÃO DA BALA até o alvo!
+            Vector3 aimDirection = (aimTarget - spawnPosition).normalized;
 
             rb.AddForce(aimDirection * 32f, ForceMode.Impulse);
             

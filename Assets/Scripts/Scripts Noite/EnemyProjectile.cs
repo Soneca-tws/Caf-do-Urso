@@ -19,21 +19,25 @@ public class EnemyProjectile : MonoBehaviour
     // Usamos OnTriggerEnter pois a bala deve ter a caixa "Is Trigger" marcada no Collider
     private void OnTriggerEnter(Collider other)
     {
-        // Se a bala bater no próprio inimigo que atirou (ou em outro inimigo), ela ignora e continua voando
         if (other.CompareTag("Enemy")) return;
 
-        // Se bater no Player
         if (other.CompareTag("Player"))
         {
-            Debug.Log("O Player tomou um tiro!");
+            Debug.Log("1. A bala reconheceu a tag Player!");
             
-            // FUTURO: Aqui você chamará o script de vida do jogador
-            // Exemplo:
-            // PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            // if (playerHealth != null) playerHealth.TakeDamage(damage);
+            PlayerSaude playerHealth = other.GetComponentInParent<PlayerSaude>();
+            
+            if (playerHealth != null) 
+            {
+                Debug.Log("2. A bala achou o script PlayerSaude!");
+                playerHealth.Morrer();
+            }
+            else
+            {
+                Debug.LogError("ERRO: A bala bateu no Player, mas NÃO achou o script PlayerSaude nele!");
+            }
         }
 
-        // Se bater no Player, no chão, ou na parede, a bala se desliga para voltar ao Pool
         Deactivate();
     }
 
