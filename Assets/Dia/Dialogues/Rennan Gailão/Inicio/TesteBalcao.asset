@@ -14,19 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
-  - author: "Rennan Gat\xE3o"
+  - author: Moguel
     ehOBarista: 0
-    text: 'Saaaaaaalve moral '
+    text: oiiiiiiii
     tags: []
+    expressao: {fileID: 0}
   - author: "Ot\xE1vio"
     ehOBarista: 1
     text: "Se n\xE3o \xE9 o coordenador mais bonito de jogos digitaaaaais, eai rennaaan"
     tags: []
+    expressao: {fileID: 0}
   - author: "Rennan Gat\xE3o"
     ehOBarista: 0
     text: "M\xEA v\xEA um caf\xE9 sem a\xE7ucar, To querendo Tirar essa mal\xE9za
       do dia."
     tags: []
+    expressao: {fileID: 0}
   proximoDialogo: {fileID: 0}
   receitaDesejada:
   - "Caf\xE9"

@@ -8,6 +8,9 @@ public struct DialogueLine
     public bool ehOBarista; // A caixinha do Pedro fica aqui!
     [TextArea(3, 10)] public string text;
     public string[] tags; 
+    
+    [Header("Emoção do Personagem")]
+    public Sprite expressao; 
 }
 
 [CreateAssetMenu(fileName = "NewDialogue", menuName = "Dialogue/Sequence")]

@@ -13,6 +13,9 @@ public class DialogueView : MonoBehaviour
     [Header("Configurações")]
     public bool manterAbertoAoFinal = true; 
 
+    // Variável que guarda o rosto do NPC atual
+    private SpriteRenderer spriteAtivoAtual;
+
     private string textoSalvo = "";
     private string autorSalvo = "";
     private bool aInspecionar = false;
@@ -20,6 +23,11 @@ public class DialogueView : MonoBehaviour
     private void Awake()
     {
         Instancia = this;
+    }
+
+    public void DefinirPersonagemAtual(SpriteRenderer spriteDoNPC)
+    {
+        spriteAtivoAtual = spriteDoNPC;
     }
 
     private void OnEnable()
@@ -61,7 +69,6 @@ public class DialogueView : MonoBehaviour
             {
                 authorText.text = line.author;
 
-                // Lógica visual para destacar o Barista (Pedro)
                 if (line.ehOBarista)
                 {
                     authorText.color = Color.cyan; 
@@ -74,6 +81,12 @@ public class DialogueView : MonoBehaviour
         }
 
         dialogueText.text = line.text;
+
+        // Lógica de mudança de emoções
+        if (line.expressao != null && spriteAtivoAtual != null)
+        {
+            spriteAtivoAtual.sprite = line.expressao;
+        }
     }
 
     public void ForcarFechamento()
