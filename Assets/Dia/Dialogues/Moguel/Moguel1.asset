@@ -18,20 +18,30 @@ MonoBehaviour:
     ehOBarista: 0
     text: Salve mano
     tags: []
-    expressao: {fileID: 21300000, guid: 9a406c656008f184da06adce8ff7e502, type: 3}
+    estadoDoNPC: 2
   - author: Barista
     ehOBarista: 1
     text: "Eai v\xE9i o que eu posso te servir"
     tags: []
-    expressao: {fileID: 21300000, guid: 76fa828b619448a4182f1d7fa955f628, type: 3}
-  - author: Barista
-    ehOBarista: 1
-    text: "Eai v\xE9i o que eu posso te servir"
+    estadoDoNPC: 3
+  - author: Moguel
+    ehOBarista: 0
+    text: "Seguinte, to s\xF3 fazendo um teste aqui "
     tags: []
-    expressao: {fileID: 21300000, guid: 76fa828b619448a4182f1d7fa955f628, type: 3}
+    estadoDoNPC: 0
+  - author: Moguel
+    ehOBarista: 0
+    text: "Vendo se o sistema do jogo t\xE1 funcionando legal"
+    tags: []
+    estadoDoNPC: 1
+  - author: Moguel
+    ehOBarista: 0
+    text: "E eu queria um caf\xE9 com a\xE7ucar igual o de rog\xEArio"
+    tags: []
+    estadoDoNPC: 1
   proximoDialogo: {fileID: 0}
   receitaDesejada:
   - "Caf\xE9"
   - "A\xE7ucar"
-  dialogoSucesso: {fileID: 0}
-  dialogoErro: {fileID: 0}
+  dialogoSucesso: {fileID: 11400000, guid: e2c03884fd5238041803aada0813d0f1, type: 2}
+  dialogoErro: {fileID: 11400000, guid: 3474c88af27c4a44ca7ad6efee635512, type: 2}

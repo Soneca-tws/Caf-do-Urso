@@ -7,13 +7,23 @@ public class ClienteMovimento : MonoBehaviour
     public Transform pontoBalcao;
     public float velocidade = 3f;
 
-    [Header("Interação")]
-    public DialogueTrigger gatilhoDialogo; 
-    public DialogueRunner runner; 
+    [Header("Interação e Visual")]
+    public DialogueTrigger gatilhoDialogo;
+    public DialogueRunner runner;
+    public NPCVisualController visualController;
 
     private bool chegouNoBalcao = false;
-    private bool indoEmbora = false; 
-    private bool jaPegouCafe = false; // NOVO: Impede que ele fuja antes da hora!
+    private bool indoEmbora = false;
+    private bool jaPegouCafe = false;
+
+    private void Awake()
+    {
+        // Se esquecer de arrastar no Inspector, pega automaticamente no próprio NPC
+        if (visualController == null)
+        {
+            visualController = GetComponent<NPCVisualController>();
+        }
+    }
 
     private void OnEnable()
     {
@@ -28,6 +38,11 @@ public class ClienteMovimento : MonoBehaviour
     private void Start()
     {
         if (pontoPorta != null) transform.position = pontoPorta.position;
+
+        if (visualController != null)
+        {
+            visualController.MudarEstado(EstadoNPC.Andando);
+        }
     }
 
     private void Update()
@@ -49,18 +64,21 @@ public class ClienteMovimento : MonoBehaviour
             if (Vector3.Distance(transform.position, pontoPorta.position) < 0.5f)
             {
                 if (FadeManager.Instancia != null) FadeManager.Instancia.TransicaoParaNoite();
-                gameObject.SetActive(false); 
+                gameObject.SetActive(false);
             }
         }
     }
 
-    // Função para avisar o cliente que a bebida foi entregue
     public void ReceberCafe()
     {
         jaPegouCafe = true;
 
-        // NOVO: Nós avisamos a câmara BEM ANTES do último diálogo acabar!
-        // Assim, quando o diálogo terminar, a câmara já vai estar travada.
+        // Muda para Experimentando enquanto o cliente prova a bebida antes da reação
+        if (visualController != null)
+        {
+            visualController.MudarEstado(EstadoNPC.Experimentando);
+        }
+
         CameraTransition camera = Object.FindAnyObjectByType<CameraTransition>();
         if (camera != null)
         {
@@ -70,10 +88,14 @@ public class ClienteMovimento : MonoBehaviour
 
     public void IniciarSaida()
     {
-        // Agora o cliente apenas vira as costas e vai embora
         if (jaPegouCafe)
         {
             indoEmbora = true;
+
+            if (visualController != null)
+            {
+                visualController.MudarEstado(EstadoNPC.Andando);
+            }
         }
     }
 }

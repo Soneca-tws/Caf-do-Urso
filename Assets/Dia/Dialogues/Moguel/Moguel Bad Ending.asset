@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
+  m_Name: Moguel Bad Ending
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: Moguel
+    ehOBarista: 0
+    text: "PO IRM\xC3O PORQUE TU ESCOLHEU FAZER UM CAF\xC9 LIXO DESSES"
+    tags: []
+    estadoDoNPC: 4
+  - author: Moguel
+    ehOBarista: 0
+    text: "ESSAS COISAS S\xD3 ACONTECEM COMIGO\n"
+    tags: []
+    estadoDoNPC: 5
+  - author: Moguel
+    ehOBarista: 0
+    text: TU VAI SE LASCAR VISSE
+    tags: []
+    estadoDoNPC: 5
+  proximoDialogo: {fileID: 0}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}

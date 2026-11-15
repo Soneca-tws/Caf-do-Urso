@@ -3,7 +3,7 @@ using TMPro;
 
 public class DialogueView : MonoBehaviour
 {
-    public static DialogueView Instancia; 
+    public static DialogueView Instancia;
 
     [SerializeField] private DialogueRunner runner;
     [SerializeField] private GameObject dialoguePanel;
@@ -11,10 +11,9 @@ public class DialogueView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dialogueText;
 
     [Header("Configurações")]
-    public bool manterAbertoAoFinal = true; 
+    public bool manterAbertoAoFinal = true;
 
-    // Variável que guarda o rosto do NPC atual
-    private SpriteRenderer spriteAtivoAtual;
+    private NPCVisualController npcVisualAtual;
 
     private string textoSalvo = "";
     private string autorSalvo = "";
@@ -25,9 +24,9 @@ public class DialogueView : MonoBehaviour
         Instancia = this;
     }
 
-    public void DefinirPersonagemAtual(SpriteRenderer spriteDoNPC)
+    public void DefinirPersonagemAtual(NPCVisualController novoNPC)
     {
-        spriteAtivoAtual = spriteDoNPC;
+        npcVisualAtual = novoNPC;
     }
 
     private void OnEnable()
@@ -71,21 +70,21 @@ public class DialogueView : MonoBehaviour
 
                 if (line.ehOBarista)
                 {
-                    authorText.color = Color.cyan; 
+                    authorText.color = Color.cyan;
                 }
                 else
                 {
-                    authorText.color = Color.white; 
+                    authorText.color = Color.white;
                 }
             }
         }
 
         dialogueText.text = line.text;
 
-        // Lógica de mudança de emoções
-        if (line.expressao != null && spriteAtivoAtual != null)
+        if (npcVisualAtual != null)
         {
-            spriteAtivoAtual.sprite = line.expressao;
+            npcVisualAtual.MudarEstado(line.estadoDoNPC);
+            npcVisualAtual.DefinirPausaFala(line.ehOBarista);
         }
     }
 
@@ -98,8 +97,8 @@ public class DialogueView : MonoBehaviour
     {
         if (!aInspecionar)
         {
-            autorSalvo = authorText.text; 
-            textoSalvo = dialogueText.text; 
+            autorSalvo = authorText.text;
+            textoSalvo = dialogueText.text;
             aInspecionar = true;
         }
 

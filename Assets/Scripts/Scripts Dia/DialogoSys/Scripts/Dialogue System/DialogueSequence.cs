@@ -5,12 +5,12 @@ using UnityEngine;
 public struct DialogueLine
 {
     public string author;
-    public bool ehOBarista; // A caixinha do Pedro fica aqui!
+    public bool ehOBarista;
     [TextArea(3, 10)] public string text;
-    public string[] tags; 
-    
-    [Header("Emoção do Personagem")]
-    public Sprite expressao; 
+    public string[] tags;
+
+    [Header("Estado do Personagem")]
+    public EstadoNPC estadoDoNPC;
 }
 
 [CreateAssetMenu(fileName = "NewDialogue", menuName = "Dialogue/Sequence")]
@@ -25,9 +25,9 @@ public class DialogueSequence : ScriptableObject
     public DialogueSequence proximoDialogo;
 
     [Header("Pedido do Cliente (Opcional)")]
-    public List<string> receitaDesejada; 
-    
+    public List<string> receitaDesejada;
+
     [Header("Feedback de Preparo")]
-    public DialogueSequence dialogoSucesso; 
-    public DialogueSequence dialogoErro;    
+    public DialogueSequence dialogoSucesso;
+    public DialogueSequence dialogoErro;
 }

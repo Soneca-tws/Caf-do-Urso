@@ -2156,10 +2156,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1037468267}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6750ddcb86384f747869053f81e25052, type: 3}
+  m_Script: {fileID: 11500000, guid: 13429c58af94a194ab46ca4a58eae845, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogueView
-  runner: {fileID: 1700102696}
+  runner: {fileID: 1700102700}
   dialoguePanel: {fileID: 827672333}
   authorText: {fileID: 904270830}
   dialogueText: {fileID: 1017777098}
@@ -2867,7 +2867,7 @@ MonoBehaviour:
   visaoBalcao: {fileID: 50414621}
   visaoPrateleira: {fileID: 1227192685}
   velocidadeTransicao: 3
-  runner: {fileID: 1700102696}
+  runner: {fileID: 1700102700}
 --- !u!4 &1432023961
 Transform:
   m_ObjectHideFlags: 0
@@ -2899,7 +2899,7 @@ MonoBehaviour:
   ingredientesSelecionados: []
   botaoPronto: {fileID: 463325735}
   transicaoCamera: {fileID: 1432023960}
-  dialogueRunner: {fileID: 1700102696}
+  dialogueRunner: {fileID: 1700102700}
   interfaceDialogo: {fileID: 1037468272}
 --- !u!114 &1432023963
 MonoBehaviour:
@@ -3185,9 +3185,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1700102697}
-  - component: {fileID: 1700102696}
-  - component: {fileID: 1700102698}
+  - component: {fileID: 1700102700}
   - component: {fileID: 1700102699}
+  - component: {fileID: 1700102698}
   m_Layer: 0
   m_Name: DialogueManager
   m_TagString: Untagged
@@ -3195,18 +3195,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1700102696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700102695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91aa44ad843847d41881a9345671d776, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueRunner
 --- !u!4 &1700102697
 Transform:
   m_ObjectHideFlags: 0
@@ -3231,10 +3219,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1700102695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daa4251725168d84689e8bac1f89afff, type: 3}
+  m_Script: {fileID: 11500000, guid: 47f72c89e2579c1428bbe513f364004e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueInput
-  runner: {fileID: 1700102696}
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueTrigger
+  runner: {fileID: 1700102700}
+  sequenceToPlay: {fileID: 11400000, guid: 8798bdd29a9ff6740a95420a9d513cd7, type: 2}
+  visualDesteNPC: {fileID: 2079003232}
 --- !u!114 &1700102699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3244,12 +3234,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1700102695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3d96b4d5ef079e4c93e330f64db4ef1, type: 3}
+  m_Script: {fileID: 11500000, guid: b3b1f6552ecf94d44aed226f11a9374d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueTrigger
-  runner: {fileID: 1700102696}
-  sequenceToPlay: {fileID: 11400000, guid: 8798bdd29a9ff6740a95420a9d513cd7, type: 2}
-  spriteDesteNPC: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueInput
+  runner: {fileID: 1700102700}
+--- !u!114 &1700102700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700102695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c403cdbd96dc448ad0f8c877a13ff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueRunner
 --- !u!1 &1772534855
 GameObject:
   m_ObjectHideFlags: 0
@@ -3404,7 +3404,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2079003231}
   - component: {fileID: 2079003228}
-  - component: {fileID: 2079003227}
+  - component: {fileID: 2079003233}
+  - component: {fileID: 2079003232}
   m_Layer: 0
   m_Name: Cliente_Prototipo
   m_TagString: Untagged
@@ -3412,23 +3413,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2079003227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079003226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7922f80483ee7ee44a5bbda0459ce441, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ClienteMovimento
-  pontoPorta: {fileID: 157828496}
-  pontoBalcao: {fileID: 1772534856}
-  velocidade: 3
-  gatilhoDialogo: {fileID: 1700102699}
-  runner: {fileID: 1700102696}
 --- !u!136 &2079003228
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3468,6 +3452,61 @@ Transform:
   - {fileID: 150680408}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2079003232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079003226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 424d2ca473658354cbaa4d4e11647380, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCVisualController
+  spriteRenderer: {fileID: 150680409}
+  fpsAnimacao: 6
+  estadoInicial: 0
+  bibliotecaDeEstados:
+  - estado: 1
+    sprites:
+    - {fileID: 21300000, guid: 76fa828b619448a4182f1d7fa955f628, type: 3}
+  - estado: 2
+    sprites:
+    - {fileID: 21300000, guid: 9a406c656008f184da06adce8ff7e502, type: 3}
+  - estado: 3
+    sprites:
+    - {fileID: 21300000, guid: 01f7cab65d8d16948938cbef75e8ef93, type: 3}
+  - estado: 4
+    sprites:
+    - {fileID: 21300000, guid: 192596aac09297f4f89fce7336f2855b, type: 3}
+  - estado: 5
+    sprites:
+    - {fileID: 21300000, guid: 192596aac09297f4f89fce7336f2855b, type: 3}
+  - estado: 6
+    sprites:
+    - {fileID: 21300000, guid: 9f541681717112244aaab6fc0fe98c09, type: 3}
+  - estado: 0
+    sprites:
+    - {fileID: 21300000, guid: 7a6cae2bd768d114a9c4842023773450, type: 3}
+--- !u!114 &2079003233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079003226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2813f81037f59934eb7b88d72512fc3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClienteMovimento
+  pontoPorta: {fileID: 157828496}
+  pontoBalcao: {fileID: 1772534856}
+  velocidade: 3
+  gatilhoDialogo: {fileID: 1700102698}
+  runner: {fileID: 1700102700}
+  visualController: {fileID: 2079003232}
 --- !u!1 &2106218870
 GameObject:
   m_ObjectHideFlags: 0

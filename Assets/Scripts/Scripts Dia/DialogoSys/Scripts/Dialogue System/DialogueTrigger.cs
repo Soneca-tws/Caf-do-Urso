@@ -6,24 +6,21 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private DialogueSequence sequenceToPlay;
 
     [Header("Visual do NPC")]
-    [Tooltip("Arraste o filho Visual2D deste NPC específico aqui!")]
-    public SpriteRenderer spriteDesteNPC; // <-- Adicionamos isto!
+    [Tooltip("Arraste o componente NPCVisualController deste personagem aqui.")]
+    public NPCVisualController visualDesteNPC;
 
     public void IniciarConversa()
     {
-        // Envia o pedido para o Gerente de Receita
         if (ReceitaManager.Instancia != null)
         {
             ReceitaManager.Instancia.DefinirPedidoAtual(sequenceToPlay);
         }
-        
-        // A MÁGICA: Avisa a Interface de quem é o rosto que vai mudar agora!
-        if (DialogueView.Instancia != null && spriteDesteNPC != null)
+
+        if (DialogueView.Instancia != null && visualDesteNPC != null)
         {
-            DialogueView.Instancia.DefinirPersonagemAtual(spriteDesteNPC);
+            DialogueView.Instancia.DefinirPersonagemAtual(visualDesteNPC);
         }
-        
-        // Inicia o diálogo na tela
+
         if (runner != null && sequenceToPlay != null)
         {
             runner.StartDialogue(sequenceToPlay);
