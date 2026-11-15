@@ -6,6 +6,7 @@ public struct DialogueLine
 {
     public string author;
     public bool ehOBarista;
+    public bool ehNarracao;
     [TextArea(3, 10)] public string text;
     public string[] tags;
 

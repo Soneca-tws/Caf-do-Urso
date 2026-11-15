@@ -12,11 +12,13 @@ public class DialogueView : MonoBehaviour
 
     [Header("Configurações")]
     public bool manterAbertoAoFinal = true;
+    public bool italicoNaNarracao = true;
 
     private NPCVisualController npcVisualAtual;
 
     private string textoSalvo = "";
     private string autorSalvo = "";
+    private bool autorAtivoSalvo = true;
     private bool aInspecionar = false;
 
     private void Awake()
@@ -58,13 +60,13 @@ public class DialogueView : MonoBehaviour
 
     private void DisplayLine(DialogueLine line)
     {
-        bool hasAuthor = !string.IsNullOrWhiteSpace(line.author);
+        bool mostrarAutor = !line.ehNarracao && !string.IsNullOrWhiteSpace(line.author);
 
         if (authorText != null)
         {
-            authorText.gameObject.SetActive(hasAuthor);
+            authorText.gameObject.SetActive(mostrarAutor);
 
-            if (hasAuthor)
+            if (mostrarAutor)
             {
                 authorText.text = line.author;
 
@@ -79,12 +81,16 @@ public class DialogueView : MonoBehaviour
             }
         }
 
-        dialogueText.text = line.text;
+        if (dialogueText != null)
+        {
+            dialogueText.text = line.text;
+            dialogueText.fontStyle = (line.ehNarracao && italicoNaNarracao) ? FontStyles.Italic : FontStyles.Normal;
+        }
 
         if (npcVisualAtual != null)
         {
             npcVisualAtual.MudarEstado(line.estadoDoNPC);
-            npcVisualAtual.DefinirPausaFala(line.ehOBarista);
+            npcVisualAtual.DefinirPausaFala(line.ehOBarista || line.ehNarracao);
         }
     }
 
@@ -97,12 +103,21 @@ public class DialogueView : MonoBehaviour
     {
         if (!aInspecionar)
         {
-            autorSalvo = authorText.text;
+            if (authorText != null)
+            {
+                autorSalvo = authorText.text;
+                autorAtivoSalvo = authorText.gameObject.activeSelf;
+            }
             textoSalvo = dialogueText.text;
             aInspecionar = true;
         }
 
-        authorText.text = titulo;
+        if (authorText != null)
+        {
+            authorText.gameObject.SetActive(true);
+            authorText.text = titulo;
+        }
+
         dialogueText.text = descricao;
     }
 
@@ -110,7 +125,12 @@ public class DialogueView : MonoBehaviour
     {
         if (aInspecionar)
         {
-            authorText.text = autorSalvo;
+            if (authorText != null)
+            {
+                authorText.gameObject.SetActive(autorAtivoSalvo);
+                authorText.text = autorSalvo;
+            }
+
             dialogueText.text = textoSalvo;
             aInspecionar = false;
         }

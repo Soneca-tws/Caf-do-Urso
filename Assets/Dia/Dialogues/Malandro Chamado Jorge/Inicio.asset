@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
+  m_Name: Inicio
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: Acorda, malucoooooo
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Aonde j\xE1 se viu o barista dormir no expediente ???"
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Aonde j\xE1 se viu o barista dormir no expediente ???"
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "O Malandro Chamado Jorge, \xE9 um cara bastante peculiar e conhecido na
+      sua cidade, e talvez at\xE9 no mundo. "
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "(boatos dizem que ele conhece o presidente e at\xE9 o papa.)\r\n "
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "Ele DESTESTA quando as pessoas abreviam seu nome para algo como Jorge,
+      ou malandro ou qualquer coisa do tipo, ele s\xF3 aceita ser chamado pelo nome
+      inteiro *O Malandro Chamado Jorge*.\r\n "
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: 'Foi mal mano, sei nem como eu cheguei aqui ou peguei no sono parando pra
+      pensar.. '
+    tags: []
+    estadoDoNPC: 0
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "T\xE1 vacilando Juruna? Faz o meu caf\xE9 a\xED! "
+    tags: []
+    estadoDoNPC: 5
+  proximoDialogo: {fileID: 0}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}
