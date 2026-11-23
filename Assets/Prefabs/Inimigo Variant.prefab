@@ -105,6 +105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e7e5d67796a76f41991121bcc65af55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BillboardY
+  modo: 0
+  anguloYFixo: 0
 --- !u!1001 &551496261333525347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -168,7 +170,9 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3514734485509999987, guid: caa05011a7fb3144994cb4bf937ccf2f, type: 3}
     - {fileID: 1560392236188147900, guid: caa05011a7fb3144994cb4bf937ccf2f, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7942649158065948872, guid: caa05011a7fb3144994cb4bf937ccf2f, type: 3}
+    - {fileID: 1951653926972805668, guid: caa05011a7fb3144994cb4bf937ccf2f, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1923306671804701089, guid: caa05011a7fb3144994cb4bf937ccf2f, type: 3}
       insertIndex: -1
