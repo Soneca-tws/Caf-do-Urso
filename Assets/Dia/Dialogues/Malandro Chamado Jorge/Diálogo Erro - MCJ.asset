@@ -13,8 +13,33 @@ MonoBehaviour:
   m_Name: "Di\xE1logo Erro - MCJ"
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
-  lines: []
-  proximoDialogo: {fileID: 0}
+  lines:
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: Juruna...
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Voc\xEA sabe muito bem que n\xE3o foi isso que eu pedi"
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Olha eu tenho muitos el\xF3gios a sua cafeteria, mas se voc\xEA continuar
+      assim eu vou ter que chamar os homi pra tu ficar esperto  "
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Mas t\xE1 a gente \xE9 amigo, vc t\xE1 pegando o jeito ainda "
+    tags: []
+    estadoDoNPC: 1
+  proximoDialogo: {fileID: 11400000, guid: 3b4b92cdd42ad954b9181f8044c17fc4, type: 2}
   receitaDesejada: []
   dialogoSucesso: {fileID: 0}
   dialogoErro: {fileID: 0}
