@@ -381,6 +381,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.72
       objectReference: {fileID: 0}
+    - target: {fileID: 5697711018585864461, guid: 22f1cc27c48ea804f840286a799bb7a0, type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1899,6 +1903,10 @@ MonoBehaviour:
   dialogueText: {fileID: 1017777098}
   manterAbertoAoFinal: 1
   italicoNaNarracao: 1
+  caracteresPorSegundo: 45
+  duracaoAbrirPainel: 0.28
+  duracaoFecharPainel: 0.2
+  forcaPulsoFala: 0.025
 --- !u!114 &1060839166 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1534736683020489620, guid: 22c86c78ed869c2459b95f3605dfddba, type: 3}
