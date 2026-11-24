@@ -91,6 +91,5 @@ MonoBehaviour:
   receitaDesejada:
   - "Caf\xE9"
   - "A\xE7ucar"
-  - "A\xE7ucar"
   dialogoSucesso: {fileID: 11400000, guid: d3bcab4025f361e4a944be823eca20f1, type: 2}
   dialogoErro: {fileID: 0}

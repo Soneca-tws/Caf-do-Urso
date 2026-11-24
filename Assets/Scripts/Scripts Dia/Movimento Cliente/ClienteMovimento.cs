@@ -1,13 +1,16 @@
+using System;
 using UnityEngine;
 
 public class ClienteMovimento : MonoBehaviour
 {
-    [Header("Caminho do Cliente")]
+    public event Action<ClienteMovimento> OnClienteSaiu;
+
+    [Header("Caminho do Cliente (Opcional - busca automático por nome)")]
     public Transform pontoPorta;
     public Transform pontoBalcao;
     public float velocidade = 3f;
 
-    [Header("Interação e Visual")]
+    [Header("Interação e Visual (Opcional - busca automático)")]
     public DialogueTrigger gatilhoDialogo;
     public DialogueRunner runner;
     public NPCVisualController visualController;
@@ -18,10 +21,25 @@ public class ClienteMovimento : MonoBehaviour
 
     private void Awake()
     {
-        // Se esquecer de arrastar no Inspector, pega automaticamente no próprio NPC
         if (visualController == null)
+            visualController = GetComponentInChildren<NPCVisualController>();
+
+        if (gatilhoDialogo == null)
+            gatilhoDialogo = GetComponent<DialogueTrigger>();
+
+        if (runner == null)
+            runner = FindFirstObjectByType<DialogueRunner>();
+
+        if (pontoPorta == null)
         {
-            visualController = GetComponent<NPCVisualController>();
+            GameObject objPorta = GameObject.Find("Ponto_Porta");
+            if (objPorta != null) pontoPorta = objPorta.transform;
+        }
+
+        if (pontoBalcao == null)
+        {
+            GameObject objBalcao = GameObject.Find("Ponto_Balcao");
+            if (objBalcao != null) pontoBalcao = objBalcao.transform;
         }
     }
 
@@ -63,7 +81,17 @@ public class ClienteMovimento : MonoBehaviour
 
             if (Vector3.Distance(transform.position, pontoPorta.position) < 0.5f)
             {
-                if (FadeManager.Instancia != null) FadeManager.Instancia.TransicaoParaNoite();
+                // Se existir um TurnoDiaManager controlando a fila, avisa ele;
+                // caso contrário, mantém o comportamento antigo de ir para a noite.
+                if (OnClienteSaiu != null)
+                {
+                    OnClienteSaiu.Invoke(this);
+                }
+                else if (FadeManager.Instancia != null)
+                {
+                    FadeManager.Instancia.TransicaoParaNoite();
+                }
+
                 gameObject.SetActive(false);
             }
         }
@@ -73,13 +101,12 @@ public class ClienteMovimento : MonoBehaviour
     {
         jaPegouCafe = true;
 
-        // Muda para Experimentando enquanto o cliente prova a bebida antes da reação
         if (visualController != null)
         {
             visualController.MudarEstado(EstadoNPC.Experimentando);
         }
 
-        CameraTransition camera = Object.FindAnyObjectByType<CameraTransition>();
+        CameraTransition camera = FindAnyObjectByType<CameraTransition>();
         if (camera != null)
         {
             camera.FinalizarExpediente();
