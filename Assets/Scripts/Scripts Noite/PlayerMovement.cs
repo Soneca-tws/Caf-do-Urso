@@ -1,38 +1,38 @@
 using UnityEngine;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    private float moveSpeed; 
-    public float walkSpeed = 7f; 
+    private float moveSpeed;
+    public float walkSpeed = 7f;
     public float dashSpeed = 12f;
     public float groundDrag = 5f;
 
     [Header("Sliding")]
     [Tooltip("A velocidade inicial máxima do slide (o impulso).")]
-    public float slideBurstSpeed = 25f; 
-    
+    public float slideBurstSpeed = 25f;
+
     [Tooltip("A velocidade final quando o slide perde a força (agachado).")]
-    public float crouchSpeed = 4f; 
-    
+    public float crouchSpeed = 4f;
+
     [Tooltip("O quão rápido ele freia. Mude esse valor no Inspector para ajustar a derrapagem!")]
-    public float slideDeceleration = 35f; 
-    
-    private float currentSlideSpeed; 
-    public float slideYScale = 0.5f; 
-    private float startYScale; 
+    public float slideDeceleration = 35f;
+
+    private float currentSlideSpeed;
+    public float slideYScale = 0.5f;
+    private float startYScale;
 
     private bool attemptingSlideJump = false;
 
     [Header("Jumping")]
-    public float jumpForce = 13f; 
+    public float jumpForce = 13f;
     public float jumpCooldown = 0.25f;
     public float airMultiplier = 0.4f;
     bool readyToJump;
 
     [Header("Ground Check")]
-    public float playerHeight = 2f; 
+    public float playerHeight = 2f;
     public LayerMask whatIsGround;
     bool grounded;
 
@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
     {
         walking,
         dashing,
-        sliding, 
+        sliding,
         air,
         grabbing // Novo estado para pausar o jogador
     }
@@ -69,9 +69,9 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        
+
         readyToJump = true;
-        startYScale = transform.localScale.y; 
+        startYScale = transform.localScale.y;
     }
 
     private void Update()
@@ -80,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
         MyInput();
         SpeedControl();
-        StateHandler(); 
+        StateHandler();
 
         if (grounded)
         {
@@ -120,7 +120,7 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current.spaceKey.isPressed && readyToJump && grounded)
         {
             readyToJump = false;
-            
+
             if (state == MovementState.sliding)
             {
                 attemptingSlideJump = true;
@@ -133,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current.leftCtrlKey.wasPressedThisFrame)
         {
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse); 
+            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
             currentSlideSpeed = slideBurstSpeed;
         }
 
@@ -154,14 +154,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool isDashing = false;
-        bool isSliding = false; 
-        
+        bool isSliding = false;
+
         if (Keyboard.current != null)
         {
             if (Keyboard.current.leftShiftKey.isPressed) isDashing = true;
-            if (Keyboard.current.leftCtrlKey.isPressed) isSliding = true; 
+            if (Keyboard.current.leftCtrlKey.isPressed) isSliding = true;
         }
-            
+
         if (Mouse.current != null && Mouse.current.rightButton.isPressed)
             isDashing = true;
 
@@ -198,10 +198,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
-            if(rb.linearVelocity.y > 0)
-               rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            if (rb.linearVelocity.y > 0)
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
-        else if (grounded) 
+        else if (grounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
@@ -223,15 +223,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedControl()
     {
-        if(OnSlope() && !exitingSlope)
+        if (OnSlope() && !exitingSlope)
         {
-            if(rb.linearVelocity.magnitude > moveSpeed)
+            if (rb.linearVelocity.magnitude > moveSpeed)
                 rb.linearVelocity = rb.linearVelocity.normalized * moveSpeed;
         }
         else
         {
             Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            
+
             if (attemptingSlideJump) return;
 
             if (flatVel.magnitude > moveSpeed)
@@ -245,7 +245,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         exitingSlope = true;
-        
+
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
         if (state == MovementState.sliding)
@@ -275,8 +275,8 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrabbing = true;
         // Breca o personagem na hora, ignorando inércia!
-        rb.linearVelocity = Vector3.zero; 
-        
+        rb.linearVelocity = Vector3.zero;
+
         // Descongela automaticamente após o tempo
         Invoke(nameof(UnfreezePlayer), duration);
     }
