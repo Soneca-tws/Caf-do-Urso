@@ -1,22 +1,35 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using TMPro;
+using PrimeTween;
 
 public class SimpleDoor : MonoBehaviour
 {
     [Header("Configuração de Abertura")]
-    [Tooltip("Velocidade mínima para abrir correndo.")]
+    [Tooltip("Velocidade mínima para abrir correndo (também oculta o aviso de UI).")]
     [SerializeField] private float minSpeedToBreak = 4.5f;
     [SerializeField] private float openAngle = 95f;
     [SerializeField] private float openSpeed = 550f;
     [SerializeField] private bool hingeOnRight = false;
 
+    [Header("Interação com Tecla E e UI")]
+    [SerializeField] private TextMeshProUGUI textoAvisoUI;
+    [SerializeField] private string mensagemAbrir = "Aperte a tecla E para abrir a porta";
+    [SerializeField] private float distanciaInteracao = 2.6f;
+    [Tooltip("0.5 exige que o jogador esteja olhando na direção da porta (~60°).")]
+    [SerializeField] [Range(0f, 1f)] private float precisaoDeFrente = 0.5f;
+
     [Header("Áudio (Opcional)")]
     [SerializeField] private AudioClip openSound;
     [SerializeField] private float soundVolume = 1f;
 
+    private static SimpleDoor portaEmFoco;
+
     private BoxCollider solidCollider;
     private NavMeshObstacle navObstacle;
+    private PlayerMovement jogadorPrincipal;
+    private Rigidbody jogadorRb;
     private PlayerMovement playerInZone;
     private Rigidbody playerRb;
 
@@ -26,11 +39,31 @@ public class SimpleDoor : MonoBehaviour
     private Vector3 normalAxis;
     private float currentAngle = 0f;
     private float targetAngle = 0f;
+    private Tween tweenAbertura;
 
     private void Awake()
     {
         navObstacle = GetComponent<NavMeshObstacle>();
         CalcularDobradica();
+    }
+
+    private void Start()
+    {
+        BuscarReferenciasJogador();
+
+        if (textoAvisoUI != null && portaEmFoco == null)
+        {
+            textoAvisoUI.gameObject.SetActive(false);
+        }
+    }
+
+    private void BuscarReferenciasJogador()
+    {
+        jogadorPrincipal = FindFirstObjectByType<PlayerMovement>();
+        if (jogadorPrincipal != null)
+        {
+            jogadorRb = jogadorPrincipal.GetComponent<Rigidbody>();
+        }
     }
 
     private void CalcularDobradica()
@@ -73,27 +106,75 @@ public class SimpleDoor : MonoBehaviour
 
     private void Update()
     {
-        if (isOpen)
+        if (isOpen) return;
+
+        if (jogadorPrincipal == null)
         {
-            if (Mathf.Abs(currentAngle - targetAngle) > 0.01f)
+            BuscarReferenciasJogador();
+        }
+
+        // 1. Verifica se o jogador está perto e virado de frente para esta porta
+        if (VerificarJogadorDeFrente())
+        {
+            if (portaEmFoco == null || portaEmFoco == this)
             {
-                float nextAngle = Mathf.MoveTowards(currentAngle, targetAngle, openSpeed * Time.deltaTime);
-                float delta = nextAngle - currentAngle;
-                transform.RotateAround(hingePoint, Vector3.up, delta);
-                currentAngle = nextAngle;
+                portaEmFoco = this;
+
+                // Só exibe o aviso na tela se o jogador NÃO estiver correndo ou dando dash
+                MostrarAviso(!JogadorEstaCorrendo());
+
+                if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                {
+                    Vector3 posOrigem = jogadorPrincipal != null ? jogadorPrincipal.transform.position : Camera.main.transform.position;
+                    OpenDoor(posOrigem);
+                    return;
+                }
             }
-            return;
         }
-
-        if (playerInZone == null) return;
-
-        if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+        else if (portaEmFoco == this)
         {
-            OpenDoor(playerInZone.transform.position);
-            return;
+            LibertarFoco();
         }
 
-        CheckSpeedAndOpen(playerInZone, playerRb);
+        // 2. Continua checando abertura por corrida/dash dentro da zona de trigger
+        if (playerInZone != null)
+        {
+            CheckSpeedAndOpen(playerInZone, playerRb);
+        }
+    }
+
+    private bool JogadorEstaCorrendo()
+    {
+        if (jogadorPrincipal == null) return false;
+
+        bool isDashing = jogadorPrincipal.state == PlayerMovement.MovementState.dashing;
+        bool isRunningFast = jogadorRb != null && jogadorRb.linearVelocity.magnitude >= minSpeedToBreak;
+
+        return isDashing || isRunningFast;
+    }
+
+    private bool VerificarJogadorDeFrente()
+    {
+        Transform refPosicao = jogadorPrincipal != null ? jogadorPrincipal.transform : (Camera.main != null ? Camera.main.transform : null);
+        Transform refVisao = Camera.main != null ? Camera.main.transform : refPosicao;
+
+        if (refPosicao == null || refVisao == null) return false;
+
+        Vector3 centroPorta = solidCollider != null ? solidCollider.bounds.center : transform.position;
+        Vector3 dirParaPorta = centroPorta - refPosicao.position;
+        dirParaPorta.y = 0f;
+
+        if (dirParaPorta.magnitude > distanciaInteracao) return false;
+        if (dirParaPorta.sqrMagnitude < 0.001f) return true;
+
+        dirParaPorta.Normalize();
+
+        Vector3 frenteOlhar = refVisao.forward;
+        frenteOlhar.y = 0f;
+        if (frenteOlhar.sqrMagnitude < 0.001f) return false;
+        frenteOlhar.Normalize();
+
+        return Vector3.Dot(frenteOlhar, dirParaPorta) >= precisaoDeFrente;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -148,6 +229,8 @@ public class SimpleDoor : MonoBehaviour
         if (isOpen) return;
         isOpen = true;
 
+        LibertarFoco();
+
         if (solidCollider != null)
             solidCollider.enabled = false;
 
@@ -164,8 +247,57 @@ public class SimpleDoor : MonoBehaviour
 
         targetAngle = openAngle * playerSide * sideMultiplier * swingSign;
 
+        float duracao = Mathf.Clamp(Mathf.Abs(targetAngle) / Mathf.Max(openSpeed, 60f), 0.15f, 0.5f);
+        if (tweenAbertura.isAlive) tweenAbertura.Stop();
+
+        tweenAbertura = Tween.Custom(
+            currentAngle,
+            targetAngle,
+            duracao,
+            novoAngulo =>
+            {
+                float delta = novoAngulo - currentAngle;
+                transform.RotateAround(hingePoint, Vector3.up, delta);
+                currentAngle = novoAngulo;
+            },
+            Ease.OutCubic
+        );
+
         if (openSound != null)
             AudioSource.PlayClipAtPoint(openSound, transform.position, soundVolume);
+    }
+
+    private void MostrarAviso(bool visivel)
+    {
+        if (textoAvisoUI == null) return;
+
+        if (visivel)
+        {
+            textoAvisoUI.text = mensagemAbrir;
+            if (!textoAvisoUI.gameObject.activeSelf)
+            {
+                textoAvisoUI.gameObject.SetActive(true);
+            }
+        }
+        else if (textoAvisoUI.gameObject.activeSelf)
+        {
+            textoAvisoUI.gameObject.SetActive(false);
+        }
+    }
+
+    private void LibertarFoco()
+    {
+        if (portaEmFoco == this)
+        {
+            portaEmFoco = null;
+            MostrarAviso(false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (tweenAbertura.isAlive) tweenAbertura.Stop();
+        LibertarFoco();
     }
 
     private void OnDrawGizmosSelected()
