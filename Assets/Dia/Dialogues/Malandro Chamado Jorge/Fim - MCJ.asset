@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
+  m_Name: Fim - MCJ
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "A cafeteria ficou incr\xEDvel viu ?, s\xF3 falta tu se aprumar, pagar
+      o que me deve e parar de dormir no servi\xE7o."
+    tags: []
+    estadoDoNPC: 3
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: "Qual foi jorge\u2026"
+    tags: []
+    estadoDoNPC: 3
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "TU SABE MUITO BEM QUE O MEU NOME \xC9 O MALANDRO CHAMADO JORGE, TEM QUE
+      FALAR O NOME INTEIRO VIU?"
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: aiii... que cara chato
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: "Malandro chamado jorge, se sabe muito bem que assim que eu puder eu termino
+      de te pagar t\xE1 ?"
+    tags: []
+    estadoDoNPC: 5
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: "e eu genuinamente n\xE3o sei o que deu em mim pra eu estar dormindo no
+      servi\xE7o, isso tem acontecido \xE0s vezes ultimamente"
+    tags: []
+    estadoDoNPC: 3
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Isso ai \xE9 falta de vitamina C, Vai chupar uma laranja que tu fica novinho
+      fica vendo"
+    tags: []
+    estadoDoNPC: 1
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "To indo viu? \xE9 bom voc\xEA me arrumar o dinheiro logo, valeu Ot\xE1rio."
+    tags: []
+    estadoDoNPC: 3
+  - author: 
+    ehOBarista: 0
+    ehNarracao: 1
+    text: 'Malandro chamado Jorge sai pela porta da frente.
+
+'
+    tags: []
+    estadoDoNPC: 3
+  - author: 
+    ehOBarista: 1
+    ehNarracao: 0
+    text: Mal esperava pra aquele cara ir embora
+    tags: []
+    estadoDoNPC: 3
+  proximoDialogo: {fileID: 0}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}

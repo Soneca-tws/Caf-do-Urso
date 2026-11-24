@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
+  m_Name: "Di\xE1logo Sucesso - MCJ"
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: ...
+    tags: []
+    estadoDoNPC: 6
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "A\xED sim, tu botou respeito nesse caf\xE9 aqui, viu?"
+    tags: []
+    estadoDoNPC: 3
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Voc\xEA at\xE9 me lembrou dos meus tempos de escola"
+    tags: []
+    estadoDoNPC: 3
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "sinto muita saudades de muita gente daquela \xE9poca, bizarro como o tempo
+      muda as coisas voc\xEA n\xE3o acha juruna ?"
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: "O tempo leva Tudo Malandro Chamado Jorge, isso \xE9 tanto reconfortante
+      quanto assutador."
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: Pra mim isso me conforta, Hoje em dia eu posso trabalhar na minha cafeteria
+      mas teve um dia que eu trabalhava na Envideo.
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 1
+    ehNarracao: 0
+    text: Ainda bem que o tempo passa e leva as coisas que um dia te fez mal.
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Verdade n\xE9, ainda bem que o tempo passa"
+    tags: []
+    estadoDoNPC: 1
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "E pensar que n\xF3s at\xE9 uns anos atr\xE1s tava raspando gesso pra usar
+      de mistura no almo\xE7o"
+    tags: []
+    estadoDoNPC: 1
+  proximoDialogo: {fileID: 0}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}
