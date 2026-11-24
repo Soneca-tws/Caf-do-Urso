@@ -1,30 +1,27 @@
 using UnityEngine;
+using PrimeTween;
 
 public class SelecaoIngrediente : MonoBehaviour
 {
     [Header("Configurações")]
     public string nomeIngrediente;
-    public bool isBase; 
+    public bool isBase;
 
-    [Header("Visual 3D")]
-    public Color corNormal = Color.white;
-    public Color corSelecionado = Color.green; // Cor para mostrar que o cubo está ativo
-    public float alturaSelecionado = 0.5f; 
+    [Header("Feedback de Seleção")]
+    public float alturaSelecionado = 0.4f;
+    [SerializeField] private float duracaoMovimento = 0.22f;
+
+    [Header("Inspeção")]
+    [TextArea(2, 4)]
+    public string descricaoIngrediente;
 
     private bool selecionado = false;
     private Vector3 posicaoOriginal;
-    private MeshRenderer meshRenderer; // Atualizado para ler a malha do Cubo 3D
+    private Tween tweenPosicao;
 
     private void Start()
     {
         posicaoOriginal = transform.localPosition;
-        
-        // Pega o componente 3D do cubo
-        meshRenderer = GetComponent<MeshRenderer>(); 
-        
-        // Define a cor inicial do material
-        if (meshRenderer != null) 
-            meshRenderer.material.color = corNormal;
     }
 
     private void OnMouseDown()
@@ -32,38 +29,49 @@ public class SelecaoIngrediente : MonoBehaviour
         ToggleSelecao();
     }
 
-   private void ToggleSelecao()
+    private void ToggleSelecao()
     {
         if (!selecionado)
         {
-            // Envia o 'this' (este script) para o gerente saber quem está pedindo espaço
-            if (!ReceitaManager.Instancia.TentarAdicionar(nomeIngrediente, this)) 
-                return; 
-            
+            if (!ReceitaManager.Instancia.TentarAdicionar(nomeIngrediente, this))
+                return;
+
             selecionado = true;
-            if (meshRenderer != null) meshRenderer.material.color = corSelecionado;
-            transform.localPosition = posicaoOriginal + new Vector3(0, alturaSelecionado, 0);
+
+            if (tweenPosicao.isAlive) tweenPosicao.Stop();
+            tweenPosicao = Tween.LocalPositionY(
+                transform,
+                posicaoOriginal.y + alturaSelecionado,
+                duracaoMovimento,
+                Ease.OutBack
+            );
         }
         else
         {
             ReceitaManager.Instancia.Remover(nomeIngrediente, this);
-            ResetarVisual(); // Usa a nova função para evitar código repetido
+            ResetarVisual();
         }
     }
 
-    // Função que o ReceitaManager vai chamar quando o café ficar pronto
+    // Chamado ao clicar novamente para desmarcar ou quando o ReceitaManager finaliza o pedido
     public void ResetarVisual()
     {
         selecionado = false;
-        if (meshRenderer != null) meshRenderer.material.color = corNormal;
-        transform.localPosition = posicaoOriginal;
+
+        if (tweenPosicao.isAlive) tweenPosicao.Stop();
+        tweenPosicao = Tween.LocalPosition(
+            transform,
+            posicaoOriginal,
+            duracaoMovimento,
+            Ease.OutQuad
+        );
     }
 
-    [Header("Inspeção")]
-    [TextArea(2, 4)]
-    public string descricaoIngrediente; // Escreva a descrição no Inspector da Unity
+    private void OnDisable()
+    {
+        if (tweenPosicao.isAlive) tweenPosicao.Stop();
+    }
 
-    // A Unity deteta quando o ponteiro do rato entra no Collider do objeto
     private void OnMouseEnter()
     {
         if (DialogueView.Instancia != null)
@@ -72,7 +80,6 @@ public class SelecaoIngrediente : MonoBehaviour
         }
     }
 
-    // A Unity deteta quando o ponteiro do rato sai do Collider
     private void OnMouseExit()
     {
         if (DialogueView.Instancia != null)

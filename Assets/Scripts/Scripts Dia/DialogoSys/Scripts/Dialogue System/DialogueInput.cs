@@ -12,6 +12,12 @@ public class DialogueInput : MonoBehaviour
 
         if (mouseClicked || spacePressed)
         {
+            // Se o texto ainda está aparecendo letra por letra, completa primeiro
+            if (DialogueView.Instancia != null && DialogueView.Instancia.TentarCompletarDigitacao())
+            {
+                return;
+            }
+
             runner.AdvanceDialogue();
         }
     }

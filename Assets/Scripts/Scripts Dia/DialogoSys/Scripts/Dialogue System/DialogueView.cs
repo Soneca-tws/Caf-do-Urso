@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using PrimeTween;
 
 public class DialogueView : MonoBehaviour
 {
@@ -10,16 +11,34 @@ public class DialogueView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI authorText;
     [SerializeField] private TextMeshProUGUI dialogueText;
 
-    [Header("Configurações")]
+    [Header("Configurações Gerais")]
     public bool manterAbertoAoFinal = true;
     public bool italicoNaNarracao = true;
 
+    [Header("Animações PrimeTween")]
+    [Tooltip("Velocidade da máquina de escrever em caracteres por segundo.")]
+    [SerializeField] private float caracteresPorSegundo = 45f;
+    [SerializeField] private float duracaoAbrirPainel = 0.28f;
+    [SerializeField] private float duracaoFecharPainel = 0.2f;
+    [SerializeField] private float forcaPulsoFala = 0.025f;
+
     private NPCVisualController npcVisualAtual;
+    private CanvasGroup canvasGroupPainel;
+    private Vector3 escalaOriginalPainel = Vector3.one;
+    private Vector3 escalaOriginalAutor = Vector3.one;
+
+    private Tween tweenPainelEscala;
+    private Tween tweenPainelAlpha;
+    private Tween tweenDigitacao;
+    private Tween tweenAutor;
 
     private string textoSalvo = "";
     private string autorSalvo = "";
     private bool autorAtivoSalvo = true;
+    private string ultimoAutorExibido = "";
     private bool aInspecionar = false;
+
+    public bool EstaDigitando => tweenDigitacao.isAlive;
 
     private void Awake()
     {
@@ -34,12 +53,26 @@ public class DialogueView : MonoBehaviour
         {
             runner = FindFirstObjectByType<DialogueRunner>();
         }
+
+        if (authorText != null)
+        {
+            escalaOriginalAutor = authorText.transform.localScale;
+        }
+
+        if (dialoguePanel != null)
+        {
+            escalaOriginalPainel = dialoguePanel.transform.localScale;
+            canvasGroupPainel = dialoguePanel.GetComponent<CanvasGroup>();
+            if (canvasGroupPainel == null)
+            {
+                canvasGroupPainel = dialoguePanel.AddComponent<CanvasGroup>();
+            }
+        }
     }
 
     public void DefinirPersonagemAtual(NPCVisualController novoNPC)
     {
         npcVisualAtual = novoNPC;
-        Debug.Log($"[DialogueView] Personagem atual definido para: {(novoNPC != null ? novoNPC.gameObject.name : "NULL")}");
     }
 
     private void OnEnable()
@@ -60,19 +93,82 @@ public class DialogueView : MonoBehaviour
             runner.OnLineStarted -= DisplayLine;
             runner.OnDialogueEnded -= HidePanel;
         }
+
+        PararTodosTweens();
     }
 
     private void ShowPanel()
     {
-        if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        if (dialoguePanel == null) return;
+
+        PararTweensPainel();
+
+        if (dialoguePanel.activeSelf && canvasGroupPainel.alpha >= 0.95f)
+        {
+            dialoguePanel.transform.localScale = escalaOriginalPainel;
+            canvasGroupPainel.alpha = 1f;
+            return;
+        }
+
+        dialoguePanel.SetActive(true);
+        dialoguePanel.transform.localScale = escalaOriginalPainel * 0.92f;
+        canvasGroupPainel.alpha = 0f;
+
+        tweenPainelEscala = Tween.Scale(
+            dialoguePanel.transform,
+            escalaOriginalPainel,
+            duracaoAbrirPainel,
+            Ease.OutBack
+        );
+
+        tweenPainelAlpha = Tween.Alpha(
+            canvasGroupPainel,
+            1f,
+            duracaoAbrirPainel * 0.8f,
+            Ease.OutQuad
+        );
     }
 
     private void HidePanel()
     {
-        if (!manterAbertoAoFinal && dialoguePanel != null)
+        if (!manterAbertoAoFinal)
         {
-            dialoguePanel.SetActive(false);
+            AnimarFechamentoPainel();
         }
+    }
+
+    public void ForcarFechamento()
+    {
+        AnimarFechamentoPainel();
+    }
+
+    private void AnimarFechamentoPainel()
+    {
+        if (dialoguePanel == null || !dialoguePanel.activeSelf) return;
+
+        PararTweensPainel();
+        if (tweenDigitacao.isAlive) tweenDigitacao.Stop();
+
+        tweenPainelEscala = Tween.Scale(
+            dialoguePanel.transform,
+            escalaOriginalPainel * 0.94f,
+            duracaoFecharPainel,
+            Ease.InQuad
+        );
+
+        tweenPainelAlpha = Tween.Alpha(
+            canvasGroupPainel,
+            0f,
+            duracaoFecharPainel,
+            Ease.InQuad
+        ).OnComplete(() =>
+        {
+            if (dialoguePanel != null)
+            {
+                dialoguePanel.SetActive(false);
+                dialoguePanel.transform.localScale = escalaOriginalPainel;
+            }
+        });
     }
 
     private void DisplayLine(DialogueLine line)
@@ -92,6 +188,25 @@ public class DialogueView : MonoBehaviour
             {
                 authorText.text = line.author;
                 authorText.color = line.ehOBarista ? Color.cyan : Color.white;
+
+                if (line.author != ultimoAutorExibido)
+                {
+                    if (tweenAutor.isAlive) tweenAutor.Stop();
+                    authorText.transform.localScale = escalaOriginalAutor;
+
+                    Vector3 forcaProporcional = new Vector3(
+                        escalaOriginalAutor.x * 0.1f,
+                        escalaOriginalAutor.y * 0.1f,
+                        0f
+                    );
+                    tweenAutor = Tween.PunchScale(authorText.transform, forcaProporcional, 0.22f);
+                }
+
+                ultimoAutorExibido = line.author;
+            }
+            else
+            {
+                ultimoAutorExibido = "";
             }
         }
 
@@ -99,30 +214,76 @@ public class DialogueView : MonoBehaviour
         {
             dialogueText.text = line.text;
             dialogueText.fontStyle = (line.ehNarracao && italicoNaNarracao) ? FontStyles.Italic : FontStyles.Normal;
+
+            IniciarEfeitoDigitacao();
+        }
+
+        if (dialoguePanel != null && dialoguePanel.activeSelf && !tweenPainelEscala.isAlive)
+        {
+            dialoguePanel.transform.localScale = escalaOriginalPainel;
+            Tween.PunchScale(dialoguePanel.transform, new Vector3(forcaPulsoFala, forcaPulsoFala, 0f), 0.18f);
         }
 
         if (npcVisualAtual != null)
         {
-            Debug.Log($"[DialogueView] Fala de '{line.author}' -> Enviando estado '{line.estadoDoNPC}' para '{npcVisualAtual.gameObject.name}'");
             npcVisualAtual.MudarEstado(line.estadoDoNPC);
             npcVisualAtual.DefinirPausaFala(line.ehOBarista || line.ehNarracao);
         }
-        else
-        {
-            Debug.LogWarning("[DialogueView] Nenhum NPCVisualController ativo foi encontrado na cena!");
-        }
     }
 
-    public void ForcarFechamento()
+    private void IniciarEfeitoDigitacao()
     {
-        if (dialoguePanel != null)
+        if (tweenDigitacao.isAlive) tweenDigitacao.Stop();
+
+        dialogueText.ForceMeshUpdate();
+        int totalCaracteres = dialogueText.textInfo.characterCount;
+
+        if (totalCaracteres <= 0 || caracteresPorSegundo <= 0f)
         {
-            dialoguePanel.SetActive(false);
+            dialogueText.maxVisibleCharacters = int.MaxValue;
+            return;
         }
+
+        dialogueText.maxVisibleCharacters = 0;
+        float duracao = totalCaracteres / caracteresPorSegundo;
+
+        tweenDigitacao = Tween.Custom(
+            0f,
+            totalCaracteres,
+            duracao,
+            valor =>
+            {
+                if (dialogueText != null)
+                {
+                    dialogueText.maxVisibleCharacters = Mathf.RoundToInt(valor);
+                }
+            },
+            Ease.Linear
+        ).OnComplete(() =>
+        {
+            if (dialogueText != null)
+            {
+                dialogueText.maxVisibleCharacters = int.MaxValue;
+            }
+        });
+    }
+
+    public bool TentarCompletarDigitacao()
+    {
+        if (!tweenDigitacao.isAlive) return false;
+
+        tweenDigitacao.Stop();
+        if (dialogueText != null)
+        {
+            dialogueText.maxVisibleCharacters = int.MaxValue;
+        }
+        return true;
     }
 
     public void MostrarInspecao(string titulo, string descricao)
     {
+        if (tweenDigitacao.isAlive) tweenDigitacao.Stop();
+
         if (!aInspecionar)
         {
             if (authorText != null)
@@ -136,10 +297,13 @@ public class DialogueView : MonoBehaviour
 
         if (authorText != null)
         {
+            if (tweenAutor.isAlive) tweenAutor.Stop();
+            authorText.transform.localScale = escalaOriginalAutor;
             authorText.gameObject.SetActive(true);
             authorText.text = titulo;
         }
 
+        dialogueText.maxVisibleCharacters = int.MaxValue;
         dialogueText.text = descricao;
     }
 
@@ -153,8 +317,22 @@ public class DialogueView : MonoBehaviour
                 authorText.text = autorSalvo;
             }
 
+            dialogueText.maxVisibleCharacters = int.MaxValue;
             dialogueText.text = textoSalvo;
             aInspecionar = false;
         }
+    }
+
+    private void PararTweensPainel()
+    {
+        if (tweenPainelEscala.isAlive) tweenPainelEscala.Stop();
+        if (tweenPainelAlpha.isAlive) tweenPainelAlpha.Stop();
+    }
+
+    private void PararTodosTweens()
+    {
+        PararTweensPainel();
+        if (tweenDigitacao.isAlive) tweenDigitacao.Stop();
+        if (tweenAutor.isAlive) tweenAutor.Stop();
     }
 }

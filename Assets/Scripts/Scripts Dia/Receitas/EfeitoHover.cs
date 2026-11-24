@@ -1,46 +1,68 @@
 using UnityEngine;
+using PrimeTween;
 
 public class EfeitoHover : MonoBehaviour
 {
-    [Header("Configurações do Efeito")]
-    public float alturaLevitar = 0.2f; // O quanto o objeto sobe
-    public float aumentoTamanho = 1.1f; // 1.1 significa que ele fica 10% maior
-    public float velocidadeAnimacao = 10f;
+    [Header("Configurações do Hover")]
+    [Tooltip("Tempo em segundos para completar uma volta de 360 graus.")]
+    [SerializeField] private float duracaoGiro = 2.5f;
+    [SerializeField] private float aumentoTamanho = 1.1f;
+    [SerializeField] private float duracaoTransicao = 0.2f;
 
-    private Vector3 posicaoOriginal;
     private Vector3 escalaOriginal;
-    
-    private Vector3 posicaoAlvo;
-    private Vector3 escalaAlvo;
+    private Quaternion rotacaoOriginal;
+
+    private Tween tweenGiro;
+    private Tween tweenEscala;
+    private SelecaoIngrediente selecaoIngrediente;
 
     private void Start()
     {
-        // Salva a posição e tamanho iniciais assim que o jogo começa
-        posicaoOriginal = transform.localPosition;
         escalaOriginal = transform.localScale;
-        
-        posicaoAlvo = posicaoOriginal;
-        escalaAlvo = escalaOriginal;
+        rotacaoOriginal = transform.localRotation;
+        selecaoIngrediente = GetComponent<SelecaoIngrediente>();
     }
 
-    // A Unity chama essa função automaticamente quando o mouse ENTRA no objeto
     private void OnMouseEnter()
     {
-        posicaoAlvo = posicaoOriginal + new Vector3(0, alturaLevitar, 0);
-        escalaAlvo = escalaOriginal * aumentoTamanho;
+        PararTweens();
+
+        // Leve aumento de escala para destacar o foco do cursor
+        tweenEscala = Tween.Scale(transform, escalaOriginal * aumentoTamanho, duracaoTransicao, Ease.OutBack);
+
+        // Só gira se o item NÃO estiver marcado como Is Base
+        bool ehBase = selecaoIngrediente != null && selecaoIngrediente.isBase;
+        if (!ehBase)
+        {
+            Vector3 rotacaoAtual = transform.localEulerAngles;
+            tweenGiro = Tween.LocalEulerAngles(
+                transform,
+                rotacaoAtual,
+                rotacaoAtual + new Vector3(0f, 360f, 0f),
+                duracaoGiro,
+                Ease.Linear,
+                cycles: -1,
+                cycleMode: CycleMode.Restart
+            );
+        }
     }
 
-    // A Unity chama essa função automaticamente quando o mouse SAI do objeto
     private void OnMouseExit()
     {
-        posicaoAlvo = posicaoOriginal;
-        escalaAlvo = escalaOriginal;
+        PararTweens();
+
+        tweenEscala = Tween.Scale(transform, escalaOriginal, duracaoTransicao, Ease.OutQuad);
+        tweenGiro = Tween.LocalRotation(transform, rotacaoOriginal, duracaoTransicao, Ease.OutQuad);
     }
 
-    private void Update()
+    private void PararTweens()
     {
-        // Move e muda o tamanho suavemente em direção ao alvo
-        transform.localPosition = Vector3.Lerp(transform.localPosition, posicaoAlvo, Time.deltaTime * velocidadeAnimacao);
-        transform.localScale = Vector3.Lerp(transform.localScale, escalaAlvo, Time.deltaTime * velocidadeAnimacao);
+        if (tweenGiro.isAlive) tweenGiro.Stop();
+        if (tweenEscala.isAlive) tweenEscala.Stop();
+    }
+
+    private void OnDisable()
+    {
+        PararTweens();
     }
 }
