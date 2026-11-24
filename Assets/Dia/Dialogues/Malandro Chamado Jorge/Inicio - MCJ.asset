@@ -47,7 +47,7 @@ MonoBehaviour:
       inteiro *O Malandro Chamado Jorge*.\r\n "
     tags: []
     estadoDoNPC: 0
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: 'Foi mal mano, sei nem como eu cheguei aqui ou peguei no sono parando pra
@@ -66,7 +66,7 @@ MonoBehaviour:
     text: "Voc\xEA deu a sorte do seu primeiro cliente ser o agiota que voc\xEA pediu
       dinheiro para montar a cafeteria. "
     tags: []
-    estadoDoNPC: 4
+    estadoDoNPC: 5
   - author: Malandro Chamado Jorge
     ehOBarista: 0
     ehNarracao: 1
@@ -80,14 +80,14 @@ MonoBehaviour:
     text: "Meu brother, me v\xEA aquele caf\xE9 docinho igual eu tomava na merenda
       da escola bora agiliza!"
     tags: []
-    estadoDoNPC: 4
+    estadoDoNPC: 7
   - author: Malandro Chamado Jorge
     ehOBarista: 0
     ehNarracao: 1
     text: "Que escola \xE9 essa que servia caf\xE9 na merenda pros alunos!?"
     tags: []
-    estadoDoNPC: 4
-  proximoDialogo: {fileID: 11400000, guid: 319037e7c30b6d24d9487c46fb47190f, type: 2}
+    estadoDoNPC: 7
+  proximoDialogo: {fileID: 0}
   receitaDesejada:
   - "Caf\xE9"
   - "A\xE7\xFAcar"

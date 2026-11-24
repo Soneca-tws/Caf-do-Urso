@@ -39,21 +39,21 @@ MonoBehaviour:
       muda as coisas voc\xEA n\xE3o acha juruna ?"
     tags: []
     estadoDoNPC: 4
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: "O tempo leva Tudo Malandro Chamado Jorge, isso \xE9 tanto reconfortante
       quanto assutador."
     tags: []
     estadoDoNPC: 4
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: Pra mim isso me conforta, Hoje em dia eu posso trabalhar na minha cafeteria
       mas teve um dia que eu trabalhava na Envideo.
     tags: []
     estadoDoNPC: 4
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: Ainda bem que o tempo passa e leva as coisas que um dia te fez mal.
@@ -72,7 +72,7 @@ MonoBehaviour:
       de mistura no almo\xE7o"
     tags: []
     estadoDoNPC: 1
-  proximoDialogo: {fileID: 0}
+  proximoDialogo: {fileID: 11400000, guid: 3b4b92cdd42ad954b9181f8044c17fc4, type: 2}
   receitaDesejada: []
   dialogoSucesso: {fileID: 0}
   dialogoErro: {fileID: 0}

@@ -21,7 +21,7 @@ MonoBehaviour:
       o que me deve e parar de dormir no servi\xE7o."
     tags: []
     estadoDoNPC: 3
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: "Qual foi jorge\u2026"
@@ -34,20 +34,20 @@ MonoBehaviour:
       FALAR O NOME INTEIRO VIU?"
     tags: []
     estadoDoNPC: 5
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: aiii... que cara chato
     tags: []
     estadoDoNPC: 5
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: "Malandro chamado jorge, se sabe muito bem que assim que eu puder eu termino
       de te pagar t\xE1 ?"
     tags: []
     estadoDoNPC: 5
-  - author: Malandro Chamado Jorge
+  - author: Juruna, O barista
     ehOBarista: 1
     ehNarracao: 0
     text: "e eu genuinamente n\xE3o sei o que deu em mim pra eu estar dormindo no
