@@ -9,7 +9,10 @@ public enum EstadoNPC
     Feliz,
     Triste,
     Raiva,
-    Experimentando
+    Experimentando,
+    Extra1,
+    Extra2,
+    Extra3
 }
 
 [System.Serializable]
