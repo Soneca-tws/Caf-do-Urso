@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
-  m_Name: Inicio
+  m_Name: Inicio - MCJ
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
   sequenceID: 
   lines:
@@ -19,19 +19,13 @@ MonoBehaviour:
     ehNarracao: 0
     text: Acorda, malucoooooo
     tags: []
-    estadoDoNPC: 0
+    estadoDoNPC: 1
   - author: Malandro Chamado Jorge
     ehOBarista: 0
     ehNarracao: 0
     text: "Aonde j\xE1 se viu o barista dormir no expediente ???"
     tags: []
-    estadoDoNPC: 0
-  - author: Malandro Chamado Jorge
-    ehOBarista: 0
-    ehNarracao: 0
-    text: "Aonde j\xE1 se viu o barista dormir no expediente ???"
-    tags: []
-    estadoDoNPC: 0
+    estadoDoNPC: 5
   - author: Malandro Chamado Jorge
     ehOBarista: 0
     ehNarracao: 1
@@ -65,8 +59,37 @@ MonoBehaviour:
     ehNarracao: 0
     text: "T\xE1 vacilando Juruna? Faz o meu caf\xE9 a\xED! "
     tags: []
-    estadoDoNPC: 5
-  proximoDialogo: {fileID: 0}
-  receitaDesejada: []
-  dialogoSucesso: {fileID: 0}
+    estadoDoNPC: 7
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "Voc\xEA deu a sorte do seu primeiro cliente ser o agiota que voc\xEA pediu
+      dinheiro para montar a cafeteria. "
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "Pelo menos ele n\xE3o parece lembrar desse assunto, at\xE9 ele ter o caf\xE9
+      dele na mesa\u2026"
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 0
+    text: "Meu brother, me v\xEA aquele caf\xE9 docinho igual eu tomava na merenda
+      da escola bora agiliza!"
+    tags: []
+    estadoDoNPC: 4
+  - author: Malandro Chamado Jorge
+    ehOBarista: 0
+    ehNarracao: 1
+    text: "Que escola \xE9 essa que servia caf\xE9 na merenda pros alunos!?"
+    tags: []
+    estadoDoNPC: 4
+  proximoDialogo: {fileID: 11400000, guid: 319037e7c30b6d24d9487c46fb47190f, type: 2}
+  receitaDesejada:
+  - "Caf\xE9"
+  - "A\xE7\xFAcar"
+  dialogoSucesso: {fileID: 11400000, guid: d3bcab4025f361e4a944be823eca20f1, type: 2}
   dialogoErro: {fileID: 0}

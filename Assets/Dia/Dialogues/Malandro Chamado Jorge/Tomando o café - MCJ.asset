@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d6315f0b7fc4d49b45a8ac6bc01ac5, type: 3}
+  m_Name: "Tomando o caf\xE9 - MCJ"
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSequence
+  sequenceID: 
+  lines:
+  - author: 
+    ehOBarista: 0
+    ehNarracao: 0
+    text: 
+    tags: []
+    estadoDoNPC: 0
+  proximoDialogo: {fileID: 0}
+  receitaDesejada: []
+  dialogoSucesso: {fileID: 0}
+  dialogoErro: {fileID: 0}

@@ -23,36 +23,53 @@ public class DialogueView : MonoBehaviour
 
     private void Awake()
     {
+        if (Instancia != null && Instancia != this)
+        {
+            Debug.LogWarning($"[DialogueView] Existe mais de um DialogueView na cena! ({Instancia.gameObject.name} e {gameObject.name})");
+        }
+
         Instancia = this;
+
+        if (runner == null)
+        {
+            runner = FindFirstObjectByType<DialogueRunner>();
+        }
     }
 
     public void DefinirPersonagemAtual(NPCVisualController novoNPC)
     {
         npcVisualAtual = novoNPC;
+        Debug.Log($"[DialogueView] Personagem atual definido para: {(novoNPC != null ? novoNPC.gameObject.name : "NULL")}");
     }
 
     private void OnEnable()
     {
-        runner.OnDialogueStarted += ShowPanel;
-        runner.OnLineStarted += DisplayLine;
-        runner.OnDialogueEnded += HidePanel;
+        if (runner != null)
+        {
+            runner.OnDialogueStarted += ShowPanel;
+            runner.OnLineStarted += DisplayLine;
+            runner.OnDialogueEnded += HidePanel;
+        }
     }
 
     private void OnDisable()
     {
-        runner.OnDialogueStarted -= ShowPanel;
-        runner.OnLineStarted -= DisplayLine;
-        runner.OnDialogueEnded -= HidePanel;
+        if (runner != null)
+        {
+            runner.OnDialogueStarted -= ShowPanel;
+            runner.OnLineStarted -= DisplayLine;
+            runner.OnDialogueEnded -= HidePanel;
+        }
     }
 
     private void ShowPanel()
     {
-        dialoguePanel.SetActive(true);
+        if (dialoguePanel != null) dialoguePanel.SetActive(true);
     }
 
     private void HidePanel()
     {
-        if (!manterAbertoAoFinal)
+        if (!manterAbertoAoFinal && dialoguePanel != null)
         {
             dialoguePanel.SetActive(false);
         }
@@ -60,6 +77,11 @@ public class DialogueView : MonoBehaviour
 
     private void DisplayLine(DialogueLine line)
     {
+        if (npcVisualAtual == null || !npcVisualAtual.gameObject.activeInHierarchy)
+        {
+            npcVisualAtual = FindFirstObjectByType<NPCVisualController>();
+        }
+
         bool mostrarAutor = !line.ehNarracao && !string.IsNullOrWhiteSpace(line.author);
 
         if (authorText != null)
@@ -69,15 +91,7 @@ public class DialogueView : MonoBehaviour
             if (mostrarAutor)
             {
                 authorText.text = line.author;
-
-                if (line.ehOBarista)
-                {
-                    authorText.color = Color.cyan;
-                }
-                else
-                {
-                    authorText.color = Color.white;
-                }
+                authorText.color = line.ehOBarista ? Color.cyan : Color.white;
             }
         }
 
@@ -89,14 +103,22 @@ public class DialogueView : MonoBehaviour
 
         if (npcVisualAtual != null)
         {
+            Debug.Log($"[DialogueView] Fala de '{line.author}' -> Enviando estado '{line.estadoDoNPC}' para '{npcVisualAtual.gameObject.name}'");
             npcVisualAtual.MudarEstado(line.estadoDoNPC);
             npcVisualAtual.DefinirPausaFala(line.ehOBarista || line.ehNarracao);
+        }
+        else
+        {
+            Debug.LogWarning("[DialogueView] Nenhum NPCVisualController ativo foi encontrado na cena!");
         }
     }
 
     public void ForcarFechamento()
     {
-        dialoguePanel.SetActive(false);
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
     }
 
     public void MostrarInspecao(string titulo, string descricao)

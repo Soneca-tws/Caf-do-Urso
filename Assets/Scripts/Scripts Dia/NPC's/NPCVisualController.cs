@@ -9,7 +9,10 @@ public enum EstadoNPC
     Feliz,
     Triste,
     Raiva,
-    Experimentando
+    Experimentando,
+    Extra1,
+    Extra2,
+    Extra3
 }
 
 [System.Serializable]
@@ -40,6 +43,14 @@ public class NPCVisualController : MonoBehaviour
     private float cronometroAnimacao = 0f;
     private bool animacaoPausada = false;
 
+    private void Awake()
+    {
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
+    }
+
     private void Start()
     {
         MudarEstado(estadoInicial);
@@ -67,40 +78,67 @@ public class NPCVisualController : MonoBehaviour
 
     public void MudarEstado(EstadoNPC novoEstado)
     {
-        if (novoEstado == EstadoNPC.ManterAtual) return;
+        Debug.Log($"[NPCVisualController | {gameObject.name}] MudarEstado chamado: Atual='{estadoAtual}' -> Novo='{novoEstado}'");
+
+        if (novoEstado == EstadoNPC.ManterAtual)
+        {
+            Debug.Log($"[NPCVisualController | {gameObject.name}] Ignorado (ManterAtual).");
+            return;
+        }
 
         if (estadoAtual == novoEstado && spritesAtuais != null && spritesAtuais.Count > 0)
         {
             animacaoPausada = false;
+            Debug.Log($"[NPCVisualController | {gameObject.name}] Já está em '{novoEstado}'. Mantendo sprites atuais.");
             return;
         }
 
         if (spriteRenderer == null)
         {
-            Debug.LogWarning($"[NPCVisualController] SpriteRenderer não atribuído em {gameObject.name}!");
+            Debug.LogWarning($"[NPCVisualController | {gameObject.name}] SpriteRenderer não atribuído!");
             return;
         }
 
+        if (TentarAplicarEstado(novoEstado)) return;
+
+        Debug.LogWarning($"[NPCVisualController | {gameObject.name}] Falha ao aplicar '{novoEstado}'. Tentando fallback para Falando...");
+
+        if (novoEstado != EstadoNPC.Falando)
+        {
+            TentarAplicarEstado(EstadoNPC.Falando);
+        }
+    }
+
+    private bool TentarAplicarEstado(EstadoNPC estadoAlvo)
+    {
         for (int i = 0; i < bibliotecaDeEstados.Count; i++)
         {
-            if (bibliotecaDeEstados[i].estado == novoEstado)
+            if (bibliotecaDeEstados[i].estado == estadoAlvo)
             {
                 List<Sprite> lista = bibliotecaDeEstados[i].sprites;
 
                 if (lista != null && lista.Count > 0 && lista[0] != null)
                 {
-                    estadoAtual = novoEstado;
+                    estadoAtual = estadoAlvo;
                     spritesAtuais = lista;
                     frameAtual = 0;
                     cronometroAnimacao = 0f;
                     animacaoPausada = false;
                     spriteRenderer.sprite = spritesAtuais[0];
+
+                    Debug.Log($"[NPCVisualController | {gameObject.name}] SUCESSO! Estado='{estadoAlvo}' | Sprite='{spritesAtuais[0].name}' aplicado em '{spriteRenderer.gameObject.name}'.");
+                    return true;
                 }
-                return;
+                else
+                {
+                    Debug.LogWarning($"[NPCVisualController | {gameObject.name}] Estado '{estadoAlvo}' está na biblioteca, mas a lista de sprites está vazia ou nula.");
+                    return false;
+                }
             }
         }
 
-        Debug.LogWarning($"[NPCVisualController] '{gameObject.name}' não tem sprites configurados para: {novoEstado}");
+        Debug.LogWarning($"[NPCVisualController | {gameObject.name}] Estado '{estadoAlvo}' NÃO foi encontrado na Biblioteca De Estados.");
+        return false;
     }
 
     public void DefinirPausaFala(bool pausar)
