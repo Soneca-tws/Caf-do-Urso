@@ -67,20 +67,6 @@ MonoBehaviour:
     text: "To indo viu? \xE9 bom voc\xEA me arrumar o dinheiro logo, valeu Ot\xE1rio."
     tags: []
     estadoDoNPC: 3
-  - author: 
-    ehOBarista: 0
-    ehNarracao: 1
-    text: 'Malandro chamado Jorge sai pela porta da frente.
-
-'
-    tags: []
-    estadoDoNPC: 3
-  - author: 
-    ehOBarista: 1
-    ehNarracao: 0
-    text: Mal esperava pra aquele cara ir embora
-    tags: []
-    estadoDoNPC: 3
   proximoDialogo: {fileID: 0}
   receitaDesejada: []
   dialogoSucesso: {fileID: 0}

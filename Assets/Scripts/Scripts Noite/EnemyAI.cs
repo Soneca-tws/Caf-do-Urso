@@ -29,10 +29,16 @@ public class EnemyAI : MonoBehaviour
     bool walkPointSet;
     public float walkPointRange;
 
-    // Ataque
-    public float timeBetweenAttacks;
-    bool alreadyAttacked;
+    [Header("Attack & Reaction")]
+    [Tooltip("Delay (em segundos) após perceber o player antes de disparar o primeiro tiro.")]
+    public float reactionDelay = 1.25f;
+    [Tooltip("Tempo de espera (em segundos) entre um disparo e outro.")]
+    public float timeBetweenAttacks = 4f;
     public GameObject projectile;
+
+    private bool alreadyAttacked;
+    private bool hasSpottedPlayer;
+    private float reactionTimer;
 
     // Estados
     public float sightRange, attackRange;
@@ -73,6 +79,26 @@ public class EnemyAI : MonoBehaviour
 
         playerInSightRange = inSightSphere && canSeePlayer;
         playerInAttackRange = inAttackSphere && canSeePlayer;
+
+        // Controla o delay de reação assim que o inimigo percebe ou perde o player de vista
+        if (playerInSightRange || playerInAttackRange)
+        {
+            if (!hasSpottedPlayer)
+            {
+                hasSpottedPlayer = true;
+                reactionTimer = reactionDelay;
+            }
+
+            if (reactionTimer > 0f)
+            {
+                reactionTimer -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            hasSpottedPlayer = false;
+            reactionTimer = reactionDelay;
+        }
 
         if (!playerInSightRange && !playerInAttackRange)
         {
@@ -129,6 +155,7 @@ public class EnemyAI : MonoBehaviour
     {
         isGrabbed = true;
         currentState = "Grabbed";
+        CancelInvoke(nameof(ResetAttack));
 
         if (visualController != null)
             visualController.DefinirEstadoBase(EstadoInimigo.Agarrado);
@@ -215,7 +242,8 @@ public class EnemyAI : MonoBehaviour
         agent.SetDestination(transform.position);
         transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
 
-        if (!alreadyAttacked)
+        // Só dispara depois que o delay inicial de percepção zerar e fora do cooldown entre tiros
+        if (!alreadyAttacked && reactionTimer <= 0f)
         {
             GameObject bullet = GetProjectileFromPool();
 
@@ -265,6 +293,7 @@ public class EnemyAI : MonoBehaviour
     {
         isDead = true;
         currentState = "Dead";
+        CancelInvoke(nameof(ResetAttack));
 
         if (visualController != null)
             visualController.DefinirEstadoBase(EstadoInimigo.Morto);

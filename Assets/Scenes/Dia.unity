@@ -1907,17 +1907,6 @@ MonoBehaviour:
   duracaoAbrirPainel: 0.28
   duracaoFecharPainel: 0.2
   forcaPulsoFala: 0.025
---- !u!114 &1060839166 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1534736683020489620, guid: 22c86c78ed869c2459b95f3605dfddba, type: 3}
-  m_PrefabInstance: {fileID: 1518924308}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2813f81037f59934eb7b88d72512fc3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ClienteMovimento
 --- !u!1 &1083545729
 GameObject:
   m_ObjectHideFlags: 0
@@ -2422,7 +2411,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurnoDiaManager
   filaDeClientes:
   - {fileID: 332472651}
-  - {fileID: 1060839166}
   indiceEncontroAtual: 0
   intervaloEntreClientes: 1
 --- !u!1001 &1518924308
@@ -2452,6 +2440,10 @@ PrefabInstance:
     - target: {fileID: 2846901672318770305, guid: 22c86c78ed869c2459b95f3605dfddba, type: 3}
       propertyPath: m_Name
       value: Rita Cadillac
+      objectReference: {fileID: 0}
+    - target: {fileID: 2846901672318770305, guid: 22c86c78ed869c2459b95f3605dfddba, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2866112998763401015, guid: 22c86c78ed869c2459b95f3605dfddba, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3011,6 +3003,10 @@ PrefabInstance:
     - target: {fileID: 2366929331822535709, guid: bc1eed26af19acc43a8350d44f7d7975, type: 3}
       propertyPath: isBase
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2366929331822535709, guid: bc1eed26af19acc43a8350d44f7d7975, type: 3}
+      propertyPath: descricaoIngrediente
+      value: "Acalma at\xE9 a mente mais pertubada"
       objectReference: {fileID: 0}
     - target: {fileID: 3156646326495294164, guid: bc1eed26af19acc43a8350d44f7d7975, type: 3}
       propertyPath: m_LocalPosition.x
