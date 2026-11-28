@@ -81,12 +81,6 @@ MonoBehaviour:
       da escola bora agiliza!"
     tags: []
     estadoDoNPC: 7
-  - author: Malandro Chamado Jorge
-    ehOBarista: 0
-    ehNarracao: 1
-    text: "Que escola \xE9 essa que servia caf\xE9 na merenda pros alunos!?"
-    tags: []
-    estadoDoNPC: 7
   proximoDialogo: {fileID: 0}
   receitaDesejada:
   - "Caf\xE9"
